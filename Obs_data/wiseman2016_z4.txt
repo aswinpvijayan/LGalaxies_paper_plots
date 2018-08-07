@@ -1,0 +1,19 @@
+#https://arxiv.org/pdf/1607.00288v2.pdf	
+#
+#TTYPE1  = 'SAMPLE_NAME'        /                                                
+#TTYPE2  = 'GALAXY_NAME'        /                                                
+#TTYPE3  = 'REDSHIFT'           /                                                
+#TTYPE4  = 'LOGMSTAR'           /                                                
+#TTYPE5  = 'LOGMSTAR_UPPER_ERR' /                                                
+#TTYPE6  = 'LOGMSTAR_LOWER_ERR' /                                                
+#TTYPE7  = 'LOGSFR  '           /                                                
+#TTYPE8  = 'LOGSFR_ERR'         /                                                
+#TTYPE9  = 'Z_ABS   '           /                                                
+#TTYPE10 = 'Z_ABS_ERR'          /   
+#DTM
+#DTMerr
+#
+# DTM from the paper
+# Z_ABS is in the O/H scale
+#GRB090323 3.5699999 10.29 0.0 0.0 1.3802112 0.50627947 9.0999994 0.11 0.95 0.07
+3.5699999	10.29	0.0	0.0	1.3802112	0.50627947	9.0999994	0.11	0.95	0.07
