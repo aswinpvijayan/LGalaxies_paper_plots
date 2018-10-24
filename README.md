@@ -1,6 +1,6 @@
 # LGalaxies_Dust paper plots
 
-* All the masses used in the script are in Msolar. Hubble parameter, h = 0.673 is used since that is the value used in the SAMs. Most of the plots use both the MR and MRII data, hence it the data collection routine uses 4 cpus to read data using the joblib python module.
+* All the masses used in the script are in Msolar. Hubble parameter, h = 0.673 is used since that is the value used in the SAMs. Most of the plots use both the MR and MRII data, hence the data collection routine uses 4 cpus to read data using the joblib python module.
 
 * Figure 1 is produced using frac_plots.py
 * Figures 2, 4, 5, 6, 7 and A1 produced using phase_space_plots_user.py
