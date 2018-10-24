@@ -8,106 +8,157 @@ import warnings
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
 import numpy as np
+sys.path.append('func_def/')
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import h5py
-sys.path.append('/lustre/scratch/astro/ap629/my_lib/')
-from essent import *
+import get_
+import seaborn as sns
+sns.set_context("paper")
 
+        ###################################################################################
+"""        
+    inp = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII
+"""        
 
-xlab = r'$log_{10}(M_{dust}/M_{\odot})$'
-ylab = r'$log_{10}(\Phi_{DR}/(M_{\odot}yr^{-1}Mpc^{-3}))$'
+inp = int(sys.argv[1])    
 
+        ####################################################################################
 
-def files_(turn_on, z):
-    
-    """
-    Function to pick the files required for the analysis. MRII is added or not, depending on the value of 'turn_on'. 
-    """
-    
-    if turn_on == 1:
-        file_req = ['/research/astro/virgo/Aswin/data/MR/hdf5/lgal_z{}_N*.hdf5'.format(z), '/lustre/scratch/astro/ap629/Dust_output_17jan/MRII/hdf5/lgal_z{}_N*.hdf5'.format(z)] 
-    else:
-        file_req = '/research/astro/virgo/Aswin/data/MR/hdf5/lgal_z{}_N*.hdf5'.format(z)
-    
-    return file_req
+redshift = np.array(['0',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9', '10', '11', '12', '13', '14'])
+snapnumMR =  np.array(['58', '38', '30', '25', '22', '19', '17', '15', '13', '12', '11', '10', '9', '8', '7'])
+snapnumMRII = np.array(['62', '42', '34', '29', '26', '23', '21', '19', '17', '16', '15', '14',	'13', '12', '11', '10'])
 
-def dust_massfn(file_req, vol):
+snaps = np.array([snapnumMR, snapnumMRII])
+sims = np.array(['MR', 'MRII'])
 
-    """
-    Outputs the dust mass function for input files of a particular redshift, for a given volume
-    """
-
-    Mdust = get_data1('Dust_elements', file_req)
-    Mdust = np.sum(Mdust, axis = 1)
-    out = remove_(Mdust)
-    out = np.array(out[0])
-    dbins = np.arange(np.log10(min(out))-0.2, np.log10(max(out))+0.2, 0.2)
-    bins, edges = np.histogram(np.log10(out), dbins)
-    
-    xx = (edges[1:]+edges[:-1])/2
-    binsize = (xx[-1] - xx[0])/len(xx)
-    yy = bins/(vol*binsize)   
-    
-    return xx, yy 
-
+filesMR = '../Rob_dust_output/MR/SA_output_*'
+filesMRII = '../Rob_dust_output/MRII/SA_output_*'
+files = np.array([filesMR, filesMRII])
 
 h = 0.673 #little h as used in the model
 
 #Simulation volumes
 MR_vol = (480.279/h)**3  #Millennium
 MRII_vol = (96.0558/h)**3 #Millennium II
+vol = np.array([MR_vol, MRII_vol])
 
-turn_on = int(sys.argv[1]) #Selecting MR and MRII, turn_on = 1 selects MRII for plotting as well.
+xlab = r'$log_{10}(M_{dust}/M_{\odot})$'
+ylab = r'$log_{10}(\Phi/(M_{\odot}yr^{-1}Mpc^{-3}))$'
+
+def outputs(x, y, sSFR, Type, z):
+    
+    """
+    #Function remove_ is for removing any nan's, inifnities and other non-physical values, can specify if the zero values in the array should not be removed, by giving the array number as argument. Returns the number density in a pixel and the median (in 13 bins in the x axis in logarithmic space) with the values of the 16th percentile and the 84th percentile.
+    """
+    
+    out = get_.remove_(np.array([x, y, sSFR, Type]), np.array([3]))  
+    out = out[(out[1] > 5e3) & (out[3] == 0) & (out[2] > get_.sSFR_cut(z))]
+    out = np.array(out).T
+    thisx = out[0]
+    thisy = out[1]
+    this_sSFR = out[2]
+    this_Type = out[3]
+    
+    del out, x, y, sSFR, Type
+    
+    return thisy
+
+
+def dust_massfn(files, z, snapnum, i):
+
+    """
+    Outputs the dust mass function for input files of a particular redshift, for a given volume
+    """
+
+    
+    add = sims[i] 
+    snap = snapnum[i][np.where(redshift == str(z))[0][0]]
+    Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
+    Type = get_.get_var(files[i], 'Type', snap)
+    Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)
+    Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)
+    Mdust1 = np.nansum(Mdust1, axis = 1)  
+    Mdust2 = np.nansum(Mdust2, axis = 1) 
+    Mdust = Mdust1 + Mdust2
+    SFR = get_.get_var(files[i], 'Sfr', snap)
+
+    sSFR = SFR/Mstar
+    
+    out = outputs(Mstar, Mdust, sSFR, Type, z)
+    dbins = np.arange(np.log10(min(out))-0.2, np.log10(max(out))+0.2, 0.2)
+    bins, edges = np.histogram(np.log10(out), dbins)
+    
+    xx = (edges[1:]+edges[:-1])/2
+    binsize = (xx[-1] - xx[0])/len(xx)
+    yy = bins/(vol[i]*binsize)   
+    
+    return xx, yy 
+
 
 fig, axs = plt.subplots(nrows = 3, ncols = 3, figsize=(15, 10), sharex=True, sharey=True, facecolor='w', edgecolor='k')
 axs = axs.ravel()
 xlab = r'$log_{10}(M_{dust}/M_{\odot})$'
 ylab = r'$log_{10}(\Phi/(Mpc^{-3}dex^{-1}))$'   
-ylim = [-6, -0.1]
+ylim = [-8, -0.1]
 
-if turn_on == 1:
+if inp == 0:
+    
+    xlim = [6, 10.4]
+    xticks = [6, 7, 8, 9, 10]
+    savename = 'dust_mass_fn_MR.eps'
+    print ('Plotting MR dust mass function')
+
+elif inp == 1:
     
     xlim = [4, 10.4]
     xticks = [4, 5, 6, 7, 8, 9, 10]
-    savename = 'dust_mass_fn_MR_MRII.png'
-    print ('Plotting MR (black) and MRII (brown) dust mass function')
-else:
+    savename = 'dust_mass_fn_MRII.eps'
+    print ('Plotting MRII dust mass function')
 
-    xlim = [6, 10.4]
-    xticks = [6, 7, 8, 9, 10]
-    savename = 'dust_mass_fn_MR.png'
-    print ('Plotting MR dust mass function')
+else:
+    
+    xlim = [4, 10.4]
+    xticks = [4, 5, 6, 7, 8, 9, 10]
+    savename = 'dust_mass_fn_MR_MRII_sSFRcut.eps'
+    print ('Plotting MR (black) and MRII (brown) dust mass function')    
 
 from obs_plots import DMF
 
 for z in range(0, 9):
 
-    file_req = files_(turn_on, z)
+    if inp in [0, 1]:
     
-    if np.isscalar(file_req):
-    
-        xx, yy = dust_massfn(file_req, MR_vol)
+        xx, yy = dust_massfn(files, z, snaps, inp)
         
-        axs[z].plot(xx, np.log10(yy), color = 'black', lw = 2)
+        if z == 8:
+            axs[z].plot(xx, np.log10(yy), color = 'black', lw = 2, legend = r'${}$'.format(sims[inp]))
+        else:
+            axs[z].plot(xx, np.log10(yy), color = 'black', lw = 2)
         
     else:
-        xx, yy = dust_massfn(file_req[0], MR_vol)
+
+        xx, yy = dust_massfn(files, z, snaps, 0)
         
-        axs[z].plot(xx, np.log10(yy), color = 'black', lw = 2)
+        if z == 8:
+            axs[z].plot(xx, np.log10(yy), color = 'black', lw = 2, label = r'$\mathrm{MR}$')
+        else:
+            axs[z].plot(xx, np.log10(yy), color = 'black', lw = 2)
         
-        xx, yy = dust_massfn(file_req[1], MRII_vol)
+        xx, yy = dust_massfn(files, z, snaps, 1)
         
-        axs[z].plot(xx, np.log10(yy), color = 'brown', lw = 2)
+        if z == 8:
+            axs[z].plot(xx, np.log10(yy), color = 'brown', lw = 2, label = r'$\mathrm{MRII}$')
+        else:
+            axs[z].plot(xx, np.log10(yy), color = 'brown', lw = 2)
     
     
     DMF(axs[z], z)   #Plotting the observational data points
     
-    if (z == 0) and (turn_on == 0):
+    if (z == 0) and (inp == 0):
         axs[z].text(6.5, -5, r'$z = {}$'.format(z), fontsize = 18)
     else:
-        axs[z].text(9.5, -1, r'$z = {}$'.format(z), fontsize = 18)
+        axs[z].text(6.5, -1, r'$z = {}$'.format(z), fontsize = 18)
     
     axs[z].set_xlim(xlim)
     axs[z].set_ylim(ylim)

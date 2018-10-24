@@ -7,12 +7,17 @@ import warnings
 #    warnings.simplefilter("ignore")
 import numpy as np
 import pandas as pd
+sys.path.append('func_def/')
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import get_
 import seaborn as sns
 sns.set_context("paper")
+
+"""
+    Plot of depletions as a function of (1) stellar mass (2) metallicity of the corresponding galaxy
+"""
 
 redshift = np.array(['0',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9', '10', '11', '12', '13', '14'])
 snapnumMR =  np.array(['58', '38', '30', '25', '22', '19', '17', '15', '13', '12', '11', '10', '9', '8', '7'])
@@ -21,75 +26,201 @@ snapnumMRII = np.array(['62', '42', '34', '29', '26', '23', '21', '19', '17', '1
 
 snaps = np.array([snapnumMR, snapnumMRII])
 
+sims = np.array(['MR', 'MRII'])
+
+inp = int(sys.argv[1])
+i = int(sys.argv[2])
+
+#filesMR = '/lustre/scratch/astro/ap629/Dust_output_8june/MR/SA_output_*'
+filesMR = '/lustre/scratch/astro/ap629/test_rmol/dust_new_2e4/MR/SA_output_*'
+#filesMRII = '/lustre/scratch/astro/ap629/Dust_output_8june/MRII/SA_output_*'
+filesMRII = '/lustre/scratch/astro/ap629/test_rmol/dust_new_2e4/MRII/SA_output_*'
+files = np.array([filesMR, filesMRII])
+
+colors = ['red', 'blue', 'orange', 'green', 'violet', 'indigo', 'violet', 'brown', 'yellow']
+arr = np.array(['C', 'O', 'Mg', 'Si', 'Ca', 'Fe'])
+
+
 def outputs(x, y, sSFR, Type, z):
     
     """
-    #Function remove_ is for removing any nan's, inifnities and other non-physical values, can specify if the zero values in the array should not be removed, by giving the array number as argument. It then selects the central halos which are above a particular sSFR. Returns the number density in a pixel and the median (in 13 bins in the x axis in logarithmic space) with the values of the 16th percentile and the 84th percentile.
+    Function remove_ is for removing any nan's, inifnities and other non-physical values, can specify if the zero values in the array should not be removed, by giving the array number as argument. It then selects the central halos which are above a particular sSFR. Returns the number density in a pixel and the median (in 13 bins in the x axis in logarithmic space) with the values of the 16th percentile and the 84th percentile.
     """
     #out = np.array([x, y, sSFR, Type])
-    #out = get_.remove_(np.array([x, y, sSFR, Type]), np.array([3]))  
-    ok = (sSFR > get_.sSFR_cut(z)) * (Type == 0)
-    thisx = x[ok]
-    thisy = y[ok]
+    out = get_.remove_(np.array([x, y, sSFR, Type]), np.array([3]))  
+    out = out[(out[2] > get_.sSFR_cut(z)) & (out[3] == 0)]
+    out = np.array(out).T
+    thisx = out[0]
+    thisy = out[1]
     
     #del out, x, y, sSFR, Type
     
     
-    #xx, yy, yy_up, yy_low = get_.get_median(thisx, thisy, n = 25)
+    xx, yy, yy_up, yy_low = get_.get_median(thisx, thisy, n = 10)
     
-    #den = get_.get_density(thisx, thisy)
+    den = get_.get_density(thisx, thisy)
     
-    #return thisx, thisy, den, xx, yy, yy_up, yy_low
-    return thisx, thisy
-    
-files = '/lustre/scratch/astro/ap629/test_rmol/dust_krumholtz/MR/SA_output*'  
-#fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(15, 10), sharex=True, sharey=True, facecolor='w', edgecolor='k')  
-color = ['red', 'green', 'blue', 'orange', 'violet', 'indigo', 'violet', 'brown', 'yellow']
-fig, axs = plt.subplots(nrows = 2, ncols = 3, figsize=(15, 10), sharex=True, sharey=True, facecolor='w', edgecolor='k')
-axs = axs.ravel()
-arr = np.array(['C', 'O', 'Mg', 'Si', 'Ca', 'Fe'])
-for j, i in enumerate(range(0,1)):    
-    snap = snaps[0][np.where(redshift == str(i))[0][0]]
-    Type = get_.get_var(files, 'Type', snap)
-    mu_gas = get_.get_var(files, 'mu_gas', snap)
-    Mstar = (get_.get_var(files, 'StellarMass', snap)*1e10)/0.673
+    return thisx, thisy, xx, yy, yy_up, yy_low, den
 
-    Mcg1 = get_.get_var(files, 'ColdGasDiff_elements', snap)
-    Mcg2 = get_.get_var(files, 'ColdGasClouds_elements', snap)
-    Mcg = Mcg1 + Mcg2
 
-    Mdust1 = get_.get_var(files, 'DustColdGasDiff_elements', snap)
-    Mdust2 = get_.get_var(files, 'DustColdGasClouds_elements', snap)
+def plot_Mstar_dep(files, z, axs, snaps, i, on):
+
+    add = sims[i]
+    snap = snaps[i][np.where(redshift == str(z))[0][0]]
+    Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/0.673
+    if on and i == 0:
+        ok = np.where(Mstar >= 10**8.85)[0]
+    elif on and i == 1:
+        ok = np.logical_and(Mstar > 10**7.5, Mstar < 10**8.9)
+    else:
+        ok = np.array([True]*len(Mstar))
+    
+    Mstar = Mstar[ok]
+    Type = get_.get_var(files[i], 'Type', snap)[ok]
+
+    Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)[ok]
+    Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)[ok]
     Mdust = Mdust1 + Mdust2    
-
-    SFR = get_.get_var(files, 'Sfr', snap)
+    
+    Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok]
+    Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
+    Mcg = Mcg1 + Mcg2
+    
+    SFR = get_.get_var(files[i], 'Sfr', snap)[ok]
+    
     sSFR = SFR/Mstar
-    DGHratio = np.sum(Mdust, axis = 1)/Mcg[:,0]
     
-    O_dep = np.log10((Mcg[:,4]-Mdust[:,4])/(15.999*Mcg[:,0])) - np.log10(477./909964.)
-    Mg_dep = np.log10((Mcg[:,6]-Mdust[:,6])/(24.305*Mcg[:,0])) - np.log10(36./909964.)
-    Si_dep = np.log10((Mcg[:,7]-Mdust[:,7])/(28.085*Mcg[:,0]))- np.log10(30./909964.)
-    Ca_dep = np.log10((Mcg[:,9]-Mdust[:,9])/(40.078*Mcg[:,0])) - np.log10(2./909964.)
-    Fe_dep = np.log10((Mcg[:,10]-Mdust[:,10])/(55.845*Mcg[:,0])) - np.log10(30./909964.)
+    plot_figure(Mstar, Mcg, Mdust, sSFR, Type, z, axs)
     
-    Fe_met = np.log10((Mcg[:,10])/(55.845*Mcg[:,0])) - np.log10(30./909964.)
+    axs.set_xlim((7.7,11.6))
+    axs.set_xticks([8, 9, 10, 11])
+    
+    return add
+
+
+def plot_Z_dep(files, z, axs, snaps, i, on):
+
+    if on:
+        add = sims[0]+'_'+sims[1]
+        snap = snaps[0][np.where(redshift == str(z))[0][0]]
+        Mstar = (get_.get_var(files[0], 'StellarMass', snap)*1e10)/0.673
+        Type = get_.get_var(files[0], 'Type', snap)
+
+        Mdust1 = get_.get_var(files[0], 'DustColdGasDiff_elements', snap)
+        Mdust2 = get_.get_var(files[0], 'DustColdGasClouds_elements', snap)
+        Mdust = Mdust1 + Mdust2    
+        
+        Mcg1 = get_.get_var(files[0], 'ColdGasDiff_elements', snap)
+        Mcg2 = get_.get_var(files[0], 'ColdGasClouds_elements', snap)
+        Mcg = Mcg1 + Mcg2
+        
+        SFR = get_.get_var(files[0], 'Sfr', snap)
+        
+        
+        snap = snaps[1][np.where(redshift == str(z))[0][0]]
+        Mstar = np.append(Mstar, (get_.get_var(files[1], 'StellarMass', snap)*1e10)/0.673)
+        Type = np.append(Type, get_.get_var(files[1], 'Type', snap))
+
+        tmp1 = get_.get_var(files[1], 'DustColdGasDiff_elements', snap)
+        tmp2 = get_.get_var(files[1], 'DustColdGasClouds_elements', snap)
+        Mdust = np.append(Mdust, tmp1 + tmp2, axis = 0)
+        
+        tmp1 = get_.get_var(files[1], 'ColdGasDiff_elements', snap)
+        tmp2 = get_.get_var(files[1], 'ColdGasClouds_elements', snap)
+        Mcg = np.append(Mcg, tmp1 + tmp2, axis = 0)
+        
+        SFR = np.append(SFR, get_.get_var(files[1], 'Sfr', snap))
+        
+    else:
+        
+        Type = get_.get_var(files[i], 'Type', snap)[ok]
+
+        Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)[ok]
+        Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)[ok]
+        Mdust = Mdust1 + Mdust2    
+        
+        Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok]
+        Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
+        Mcg = Mcg1 + Mcg2
+        
+        SFR = get_.get_var(files[i], 'Sfr', snap)[ok]
+        
+    
+    sSFR = SFR/Mstar
+    
+    pltx = np.nansum(Mcg[:,2:], axis = 1)/np.nansum(Mcg, axis = 1)
+    
+    plot_figure(pltx, Mcg, Mdust, sSFR, Type, z, axs)
+    
+    axs.set_xlim((-3.6,0.1))
+    axs.set_xticks([-3.5, -2.5, -1.5, -0.5])
+    
+    return add
+
+    
+def plot_figure(pltx, Mcg, Mdust, sSFR, Type, z, axs):
     
     for l, k in enumerate([2,4,6,7,9,10]):
-        x, y = outputs(Mstar, (Mdust[:,k])/(Mcg[:,k]), sSFR, Type, i)
+    
+        x, y, xx, yy, yy_up, yy_low, den = outputs(pltx, Mdust[:,k]/Mcg[:,k], sSFR, Type, z)
+            
+        #axs[l].scatter(np.log10(x), y, marker = 'o', s=10, c = den, alpha = 1, edgecolors='None', cmap = plt.cm.get_cmap('gist_yarg'), norm = matplotlib.colors.LogNorm(vmin = min(den), vmax = max(den)))
         
-        axs[l].scatter(np.log10(x), y, marker = 'o', s=5, c = color[l], label = arr[l])
-        axs[l].set_xlim((7,11.6))
-        axs[l].set_ylim((0,1.1))
-        axs[l].grid()
-        axs[l].legend(frameon=False, fontsize=15)
+        axs.plot(np.log10(xx), yy, lw = 2, color = colors[l], label = arr[l])
+        axs.plot(np.log10(xx), yy_up, lw = 2, ls = 'dashed', color = colors[l])
+        axs.plot(np.log10(xx), yy_low, lw = 2, ls = 'dashed', color = colors[l])
+    
+    for label in (axs.get_xticklabels() + axs.get_yticklabels()):
+        label.set_fontsize(18)
+        
+    axs.set_ylim((-0.05,1.2))
+    axs.set_yticks([0., 0.2, 0.4, 0.6, 0.8, 1.0])
+    axs.grid(True)
+    
 
+
+#fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(15, 10), sharex=True, sharey=True, facecolor='w', edgecolor='k')  
+fig, axs = plt.subplots(nrows = 3, ncols = 4, figsize=(18, 12), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+axs = axs.ravel()
+
+if inp == 0:
+    
+    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
+    ylab = r'$log_{10}(M_{dust}/(M_{\odot}))$'
+    savename = 'Depletion_Stellar_'
+    
+    for z in range(0, 12):
+        if i <= 1:
+            add = plot_Mstar_dep(files, z, axs[z], snaps, i, False)
+        else:
+            add1 = plot_Mstar_dep(files, z, axs[z], snaps, 0, True)
+            if z == 11:
+                axs[z].legend(frameon=False, fontsize=15)
+            add2 = plot_Mstar_dep(files, z, axs[z], snaps, 1, True)
+            add = add1+'_'+add2
+        
+            
+        axs[z].text(8.2, 1, r'$z = {}$'.format(z), fontsize = 18)
+        
+elif inp == 1:
+
+    xlab = r'$12+log_{10}(O/H)$'
+    ylab = r'$log_{10}(M_{Dust}/(M_{\odot}))$'
+    savename = 'Depletion_metallicity_'
+    
+    for z in range(0, 12):
+        if i <= 1:
+            add = plot_Z_dep(files, z, axs[z], snaps, i, False)
+        else:
+            add = plot_Z_dep(files, z, axs[z], snaps, 5, True)
+        if z == 11:
+            axs[z].legend(frameon=False, fontsize=15)
+        axs[z].text(-2.75, 1, r'$z = {}$'.format(z), fontsize = 18)
+
+
+fig.tight_layout()    
 fig.subplots_adjust(bottom=0.09, left = 0.08, wspace=0, hspace=0)
-#axs.legend(frameon=False)
-#axs.set_xlabel(r'$12+log_{10}(O/H)$', fontsize = 25)
-axs[-2].set_xlabel(r'$log_{10}(M_{*}/M_{\odot})$', fontsize = 22)
-#axs.set_ylabel(r'$\frac{O(dust)}{O(total)}$', fontsize = 22)
-#axs.set_ylim((-6,-1))
-#axs.set_xlim((6,11))
-#axs.grid()
-plt.savefig('depletions.png')
-plt.show()
+fig.text(0.03, 0.5, r'$Fraction$', va='center', rotation='vertical', fontsize=22)
+fig.text(0.5, 0.04, r'$log_{10}(M_{*}/M_{\odot})$', va='center', fontsize=22)
+plt.savefig(savename+add+'tacc2e4.png')
+plt.close()
