@@ -1,6 +1,6 @@
 # LGalaxies_Dust paper plots
 
-This repository contains the scripts for analysing the output of the L-Galaxies SAMs implementation of dust production in its galaxies. The code producing the data can be found at https://github.com/aswinpvijayan/L-Galaxies_Dust which uses the dark matter merger trees of the Millennium (MR) and the Millennium II (MRII) runs. When running the scripts change the ```fileMR``` and ```fileMRII``` to the respective locations of the output.
+This repository contains the scripts for analysing the output of the L-Galaxies SAMs implementation of dust production in its galaxies. The code producing the data can be found at https://github.com/aswinpvijayan/L-Galaxies_Dust which uses the dark matter merger trees of the Millennium (MR) and the Millennium II (MRII) runs. When running the scripts change the ```fileMR``` and ```fileMRII``` to the respective locations of the output. Folder 'func_def' contains all the required python files that are being called from the main directory.
 
 * All the masses used in the script are in Msolar. Hubble parameter, h = 0.673 is used since that is the value used in the SAMs. Most of the plots use both the MR and MRII data, hence the data collection routine uses 4 cpus to read data using the joblib python module.
 
