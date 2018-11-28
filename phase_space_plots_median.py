@@ -24,11 +24,10 @@ from astropy.cosmology import Planck13
         #####################################################################################
 """
     User inputs for producing the preferred plots:
-    0. Dust mass vs stellar mass plot    (Figure 11a, 13a in paper)
-    1. Dust mass vs Metallciity plot    (Figure 13b in paper)
-    2. Dust-to-gas ratio (DGR) vs stellar mass (Figure 11b in paper)
+    0. Dust mass vs stellar mass plot    (Figure 12b in paper)
+    2. Dust-to-gas ratio (DGR) vs stellar mass 
     3. DGR vs Metallicity
-    4. Dust-to-metal (DTM) ratio vs Stellar mass   (Figure 11c in paper)
+    4. Dust-to-metal (DTM) ratio vs Stellar mass   (Figure 12a in paper)
     5. DTM ratio vs Metallicity
     6. Accretion timescale vs stellar mass plot
     7. Accretion timescale vs metallicity plot
@@ -69,12 +68,15 @@ MRII_vol = (96.0558/h)**3 #Millennium II
 if z_inp == 0:
     z_ = norm_z
     name_z = 'z0_8'
+    
 elif z_inp == 1:
     z_ = high_z
     name_z = 'z9_12'
+    
 elif z_inp == 2:
     z_ = all_z
     name_z = 'z0_12'
+
 else:
     print ('Not an applicable redshift choice, retry....')
     sys.exit()
@@ -84,12 +86,20 @@ fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(6, 6), sharex=True, share
 
 if inp == 0:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{Dust}/(M_{*}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{Dust}/(M_{*}))$'
     savename = 'Dust_Stellar_'
 
     from Mstar_Mdust import plot_Mstar_Mdust_median
-
+    if z_inp == 0:
+        xlim = [7.5,11.9]
+        ylim = [1.5,10.8]
+        xticks = [8, 9, 10, 11]
+    else:
+        xlim = [6.5,11.7]
+        ylim = [1.5,6.5]
+        xticks = [7, 8, 9, 10, 11]
+        
     for z in z_:
         if i <= 1:
             add = plot_Mstar_Mdust_median(files, z, axs, snaps, i, False)
@@ -99,11 +109,15 @@ if inp == 0:
             add2 = plot_Mstar_Mdust_median(files, z, axs, snaps, 1, True)
             print ('MRII: z={}'.format(z))
             add = add1+'_'+add2
+    
+    axs.set_xlim(xlim)
+    axs.set_ylim(ylim)
+    axs.set_xticks(xticks)
 
 elif inp == 1:
 
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\odot}))$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
     savename = 'Dust_metal_'
 
     from Met_Mdust import plot_O_H_vs_Dust_median
@@ -116,8 +130,8 @@ elif inp == 1:
 
 elif inp == 2:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
     savename = 'DGR_stell_'
 
     from DGR_Mstar import plot_DGR_Mstar_median
@@ -132,8 +146,8 @@ elif inp == 2:
 
 elif inp == 3:
 
-    xlab = r'$12+log_{10}(O/H)$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    xlab = r'$12+\mathrm{log}_{10}(O/H)$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
     savename = 'DGR_met_ratio_'
 
     from DGR_Met import plot_O_H_vs_DGR_median
@@ -146,25 +160,43 @@ elif inp == 3:
 
 elif inp == 4:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\mathrm{Metal}}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
     savename = 'DTM_stellar_'
+    
+    if z_inp == 0:
+        xlim = [7.5, 11.7]
+        ylim = [-3, 0]
+        xticks = [8, 9, 10, 11]
+        yticks = [-3, -2, -1, 0]
+    else:
+        xlim = [6.5,11.3]
+        ylim = [-3.5, -1.5]
+        xticks = [7, 8, 9, 10, 11]
+        yticks = [-3, -2]
 
     from DTM_Mstar import plot_Mstar_DTM_median
 
-    for z in range(0, 9):
+    for z in z_:
         if i <= 1:
             add = plot_Mstar_DTM_median(files, z, axs, snaps, i, False)
+            print ('{}: z={}'.format(sims[i], z))
         else:
             add1 = plot_Mstar_DTM_median(files, z, axs, snaps, 0, True)
+            print ('MR: z={}'.format(z))
             add2 = plot_Mstar_DTM_median(files, z, axs, snaps, 1, True)
+            print ('MRII: z={}'.format(z))
             add = add1+'_'+add2
 
-
+    axs.set_xlim(xlim)
+    axs.set_ylim(ylim)
+    axs.set_xticks(xticks)
+    axs.set_yticks(yticks)
+    
 elif inp == 5:
 
-    xlab = r'$12+log_{10}(O/H)$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\mathrm{Metal}}))$'
+    xlab = r'$12+\mathrm{log}_{10}(O/H)$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
     savename = 'DTM_met_'
 
     from DTM_Met import plot_O_H_vs_DTM_median
@@ -172,13 +204,15 @@ elif inp == 5:
     for z in z_:
         if i <= 1:
             add = plot_O_H_vs_DTM_median(files, z, axs, snaps, i, False)
+            print ('{}: z={}'.format(sims[i], z))
         else:
             add = plot_O_H_vs_DTM_median(files, z, axs, snaps, i, True)
+            print ('z={}'.format(z))
 
 elif inp == 6:
 
-    xlab = r'$log_{10}(M_{*}/M_{\odot})$'
-    ylab = r'$log_{10}(t_{\mathrm{acc}})$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(\tau_{\mathrm{acc}})$'
     savename = 'Mstar_tacc_'
 
     from tacc_Mstar import plot_tacc_Mstar_median
@@ -187,15 +221,18 @@ elif inp == 6:
 
         if i <= 1:
             add = plot_tacc_Mstar_median(files, z, axs, snaps, i, False)
+            print ('{}: z={}'.format(sims[i], z))
         else:
             add1 = plot_tacc_Mstar_median(files, z, axs, snaps, 0, True)
+            print ('MR: z={}'.format(sims[i], z))
             add2 = plot_tacc_Mstar_median(files, z, axs, snaps, 1, True)
+            print ('MRII: z={}'.format(sims[i], z))
             add = add1+'_'+add2
 
 elif inp == 7:
 
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$log_{10}(t_{\mathrm{acc}})$'
+    ylab = r'$\mathrm{log}_{10}(\tau_{\mathrm{acc}})$'
     savename = 'Met_tacc_'
 
     from tacc_Met import plot_tacc_Met_median
@@ -204,8 +241,10 @@ elif inp == 7:
 
         if i <= 1:
             add = plot_tacc_Met_median(files, z, axs, snaps, i, False)
+            print ('{}: z={}'.format(sims[i], z))
         else:
             add = plot_tacc_Met_median(files, z, axs, snaps, i, True)
+            print ('z={}'.format(sims[i], z))
 
 else:
 
@@ -216,6 +255,6 @@ else:
 fig.tight_layout()
 fig.subplots_adjust(bottom=0.15, left = 0.15, wspace=0, hspace=0)
 fig.text(0.03, 0.5, ylab, va='center', rotation='vertical', fontsize=22)
-fig.text(0.47, 0.04, xlab, va='center', fontsize=22)
-plt.savefig(name_z+savename+add+'_median.eps')
+fig.text(0.45, 0.04, xlab, va='center', fontsize=22)
+plt.savefig(name_z+savename+add+'_median.pdf')
 plt.close()

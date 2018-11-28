@@ -16,19 +16,21 @@ sns.set_context("paper")
             ##########################################################################
 """
     User inputs for producing the preferred plots: 
-    0 - Cosmic dust rate versus redshift
-    1 - Dust production rate versus Stellar Mass for different redshifts
+    0 - Cosmic dust rate versus redshift    (Figure 6 in paper)
+    1 - Dust production rate versus Stellar Mass for different redshifts    (Figure 7 in paper)
     1 - Dust production rate versus Metallicity for different redshifts
     
     inp = user input for preferred plot
     
     z_inp = For plotting different redshift range. 
-    0 - [0, 8]
-    1 - [9, 13]
+    0 - [0, 8]  (Figure 6 in paper)
+    1 - [9, 13] (Figure 12c in paper)
     2 - [0, 13]
             
     i = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII        
 """            
+
+h = 0.673 #little h as used in the model
 
 filesMR = '../Rob_dust_output/MR/SA_output_*'
 filesMRII = '../Rob_dust_output/MRII/SA_output_*'
@@ -49,8 +51,6 @@ i = int(sys.argv[3])
 
             ##########################################################################
 
-h = 0.673 #little h as used in the model
-
 norm_z = np.arange(0, 9, 1)
 high_z = np.arange(9, 13, 1)
 all_z = np.arange(0, 13, 1)
@@ -63,16 +63,16 @@ else:
     savename3 = 'MR_MRII'
 
 if inp == 0:
-    xlab = r'$z$'
-    ylab = r'$log_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}\mathrm{Mpc}^{-3}))$'
+    xlab = r'$\mathrm{z}$'
+    ylab = r'$\mathrm{log}_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}\mathrm{Mpc}^{-3}))$'
     savename2 = 'dust_prod_rate_redshift'
 elif inp == 1:
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/(M_{\odot}))$'
+    ylab = r'$\mathrm{log}_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}))$'
     savename2 = 'dust_prod_rate_Mstar'
 elif inp == 2:
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$log_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}))$'
+    ylab = r'$\mathrm{log}_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}))$'
     savename2 = 'dust_prod_rate_Z'
 else:
     print ('Not an applicable choice, retry....')
@@ -135,7 +135,7 @@ def dust_prod_rate_redshift(files, z, snap, i):
     Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)
     Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)
     Mcg = Mcg1 + Mcg2
-    Z = (Mcg[:,4]-Mdust[:,4])/(15.9994*(Mcg[:,0]))  #O/H ratio
+    Z = (Mcg[:,4])/(15.9994*(Mcg[:,0]))  #O/H ratio
     #Z = np.nansum(Mcg[:,2:], axis = 1)/np.nansum(Mcg, axis = 1)
     Mdust = np.nansum(Mdust, axis = 1)
     ok = np.logical_and(sSFR > get_.sSFR_cut(z), np.logical_and(Mdust > 0.0, Type == 0))
@@ -148,9 +148,11 @@ def dust_prod_rate_redshift(files, z, snap, i):
     return dustrates, Mstar, SFR, Z
     
 if inp == 0:
-
-    #fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(6, 6), sharex=True, sharey=True, facecolor='w', edgecolor='k')
-    fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 12), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+    if z_inp == 1:
+        fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(6, 6), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+    else:
+        fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 12), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+    
     pAGB = pSNII = pSNIA = pGG = dest = pNET = pSFR = np.array([])
     for z in z_:
         snap = snaps[i][np.where(redshift == str(z))[0][0]]
@@ -333,8 +335,8 @@ elif inp == 2:
 
 
 fig.tight_layout()    
-fig.subplots_adjust(bottom=0.1, left = 0.1, wspace=0, hspace=0)
-fig.text(0.01, 0.5, ylab, va='center', rotation='vertical', fontsize=24)
-fig.text(0.5, 0.04, xlab, va='center', fontsize=24)
-plt.savefig(savename1+savename2+savename3+'_full.eps')
+fig.subplots_adjust(bottom=0.12, left = 0.1, wspace=0, hspace=0)
+fig.text(0.01, 0.52, ylab, va='center', rotation='vertical', fontsize=24)
+fig.text(0.49, 0.05, xlab, va='center', fontsize=26)
+plt.savefig(savename1+savename2+savename3+'_full.pdf')
 plt.close()

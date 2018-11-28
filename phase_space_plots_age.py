@@ -25,11 +25,11 @@ from mpl_toolkits.axes_grid.inset_locator import inset_axes
         ###################################################################################
 """
     User inputs for producing the preferred plots:
-    0. Dust mass vs stellar mass plot for z = 0-9   (Figure 3 in paper)
+    0. Dust mass vs stellar mass plot for z = 0-9   
     1. Dust mass vs Metallciity plot for z = 0-9
     2. Dust-to-gas ratio (DGR) vs stellar mass for z = 0-9
     3. DGR vs Metallicity for z = 0-9
-    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9
+    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9  (Figure 3 in paper)
     5. DTM ratio vs Metallicity for z = 0-9
     6. Accretion timescale vs stellar mass plot for z = 0-9
     7. Accretion timescale vs metallicity plot for z = 0-9
@@ -62,8 +62,8 @@ axs = axs.ravel()
 
 if inp == 0:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\odot}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
     savename = 'Dust_Stellar_'
 
     from obs_plots import DM_obs
@@ -83,13 +83,14 @@ if inp == 0:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=16)
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(8.45, 2.5, r'$z = {}$'.format(z), fontsize = 19)
 
 elif inp == 1:
 
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\odot}))$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
     savename = 'Dust_metal_'
 
     from obs_plots import D_Met_obs
@@ -105,13 +106,14 @@ elif inp == 1:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=16)
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(7.75, 9, r'$z = {}$'.format(z), fontsize = 18)
 
 elif inp == 2:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
     savename = 'DGR_stell_'
 
     from obs_plots import DG_Mstar_obs
@@ -129,13 +131,14 @@ elif inp == 2:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=16)
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(8.75, -1, r'$z = {}$'.format(z), fontsize = 18)
 
 elif inp == 3:
 
-    xlab = r'$12+log_{10}(O/H)$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    xlab = r'$12+\mathrm{log}_{10}(O/H)$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
     savename = 'DGR_met_ratio_'
 
     from obs_plots import DG_met_obs
@@ -151,13 +154,14 @@ elif inp == 3:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=16)
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(10, -5, r'$z = {}$'.format(z), fontsize = 18)
 
 elif inp == 4:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\mathrm{Metal}}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
     savename = 'DTM_stellar_'
 
     from obs_plots import DTM_stell
@@ -172,17 +176,16 @@ elif inp == 4:
             add2, p, den = plot_Mstar_DTM_age(files, z, axs[z], snaps, 1, True)
             add = add1+'_'+add2
 
-        cbaxes = inset_axes(axs[z], width="97%", height="3%", loc=1)
+        cbaxes = inset_axes(axs[z], width="93%", height="3%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
-        for label in (cbaxes.get_xticklabels()):
-            label.set_fontsize(15)
-
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(11, -1.5, r'$z = {}$'.format(z), fontsize = 18)
 
 elif inp == 5:
 
-    xlab = r'$12+log_{10}(O/H)$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\mathrm{Metal}}))$'
+    xlab = r'$12+\mathrm{log}_{10}(O/H)$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
     savename = 'DTM_met_'
 
     from obs_plots import DTM_oxy
@@ -198,14 +201,15 @@ elif inp == 5:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=16)
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(10, -1, r'$z = {}$'.format(z), fontsize = 18)
 
 
 elif inp == 6:
 
-    xlab = r'$log_{10}(M_{*}/M_{\odot})$'
-    ylab = r'$log_{10}(t_{\mathrm{acc}})$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(\tau_{\mathrm{acc}})$'
     savename = 'Mstar_tacc_'
 
     from tacc_Mstar import plot_tacc_Mstar_age
@@ -224,7 +228,8 @@ elif inp == 6:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=16)
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(8.2, 5.7, r'$z = {}$'.format(z), fontsize = 18)
         if z != 0:
             axs[z].legend().set_visible(False)
@@ -232,7 +237,7 @@ elif inp == 6:
 elif inp == 7:
 
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$log_{10}(t_{\mathrm{acc}})$'
+    ylab = r'$\mathrm{log}_{10}(\tau_{\mathrm{acc}})$'
     savename = 'Met_tacc_'
 
     from tacc_Met import plot_tacc_Met_age
@@ -249,7 +254,8 @@ elif inp == 7:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=16)
+        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        cbaxes.set_zorder(1)
         axs[z].text(8.2, 5.7, r'$z = {}$'.format(z), fontsize = 18)
         if z != 0:
             axs[z].legend().set_visible(False)

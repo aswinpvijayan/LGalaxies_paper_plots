@@ -32,9 +32,9 @@ inp = int(sys.argv[1])
 i = int(sys.argv[2])
 
 #filesMR = '/lustre/scratch/astro/ap629/Dust_output_8june/MR/SA_output_*'
-filesMR = '/lustre/scratch/astro/ap629/test_rmol/dust_new_2e4/MR/SA_output_*'
+filesMR = '/lustre/scratch/astro/ap629/Rob_dust_output/MR/SA_output_5.h5'
 #filesMRII = '/lustre/scratch/astro/ap629/Dust_output_8june/MRII/SA_output_*'
-filesMRII = '/lustre/scratch/astro/ap629/test_rmol/dust_new_2e4/MRII/SA_output_*'
+filesMRII = '/lustre/scratch/astro/ap629/Rob_dust_output/MRII_sub/SA_output_*'
 files = np.array([filesMR, filesMRII])
 
 colors = ['red', 'blue', 'orange', 'green', 'violet', 'indigo', 'violet', 'brown', 'yellow']
@@ -48,7 +48,7 @@ def outputs(x, y, sSFR, Type, z):
     """
     #out = np.array([x, y, sSFR, Type])
     out = get_.remove_(np.array([x, y, sSFR, Type]), np.array([3]))  
-    out = out[(out[2] > get_.sSFR_cut(z)) & (out[3] == 0)]
+    out = out[(out[3] == 0)]
     out = np.array(out).T
     thisx = out[0]
     thisy = out[1]
@@ -222,5 +222,5 @@ fig.tight_layout()
 fig.subplots_adjust(bottom=0.09, left = 0.08, wspace=0, hspace=0)
 fig.text(0.03, 0.5, r'$Fraction$', va='center', rotation='vertical', fontsize=22)
 fig.text(0.5, 0.04, r'$log_{10}(M_{*}/M_{\odot})$', va='center', fontsize=22)
-plt.savefig(savename+add+'tacc2e4.png')
+plt.savefig(savename+add+'test.png')
 plt.close()

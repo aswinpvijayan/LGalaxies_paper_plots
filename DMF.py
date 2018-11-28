@@ -19,6 +19,7 @@ sns.set_context("paper")
         ###################################################################################
 """        
     inp = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII
+    (Figure 11 in paper)
 """        
 
 inp = int(sys.argv[1])    
@@ -43,8 +44,8 @@ MR_vol = (480.279/h)**3  #Millennium
 MRII_vol = (96.0558/h)**3 #Millennium II
 vol = np.array([MR_vol, MRII_vol])
 
-xlab = r'$log_{10}(M_{dust}/M_{\odot})$'
-ylab = r'$log_{10}(\Phi/(M_{\odot}yr^{-1}Mpc^{-3}))$'
+xlab = r'$\mathrm{log}_{10}(M_{\mathrm{dust}}/M_{\odot})$'
+ylab = r'$\mathrm{log}_{10}(\Phi/(M_{\odot}\mathrm{yr}^{-1}\mathrm{Mpc}^{-3}))$'
 
 def outputs(x, y, sSFR, Type, z):
     
@@ -53,7 +54,7 @@ def outputs(x, y, sSFR, Type, z):
     """
     
     out = get_.remove_(np.array([x, y, sSFR, Type]), np.array([3]))  
-    out = out[(out[1] > 5e3) & (out[3] == 0) & (out[2] > get_.sSFR_cut(z))]
+    out = out[(out[1] > 5e3) & (out[3] == 0)]
     out = np.array(out).T
     thisx = out[0]
     thisy = out[1]
@@ -106,21 +107,21 @@ if inp == 0:
     
     xlim = [6, 10.4]
     xticks = [6, 7, 8, 9, 10]
-    savename = 'dust_mass_fn_MR.eps'
+    savename = 'dust_mass_fn_MR.pdf'
     print ('Plotting MR dust mass function')
 
 elif inp == 1:
     
     xlim = [4, 10.4]
     xticks = [4, 5, 6, 7, 8, 9, 10]
-    savename = 'dust_mass_fn_MRII.eps'
+    savename = 'dust_mass_fn_MRII.pdf'
     print ('Plotting MRII dust mass function')
 
 else:
     
     xlim = [4, 10.4]
     xticks = [4, 5, 6, 7, 8, 9, 10]
-    savename = 'dust_mass_fn_MR_MRII_sSFRcut.eps'
+    savename = 'dust_mass_fn_MR_MRII.pdf'
     print ('Plotting MR (black) and MRII (brown) dust mass function')    
 
 from obs_plots import DMF

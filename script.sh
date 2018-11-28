@@ -20,7 +20,7 @@ ulimit -s unlimited
 #$ -j y
 #$ -o output/
 # Give the job a name
-#$ -N dust_phase_plots
+#$ -N dust_prod_plot
 # -- Send email when the job exits, is aborted or suspended
 # #$ -m eas
 # #$ -M YOUR_USERNAME@sussex.ac.uk
@@ -33,6 +33,8 @@ echo "Running job script"
 
 #i=$(($SGE_TASK_ID))
 
-python phase_space_plots_user.py 8 5
+#python phase_space_plots_user.py 4 5
+#python DMF.py 5
+python dust_prod_rates.py 1 0 5
 
 echo "Finished job script"

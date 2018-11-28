@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+
+"""
+
+    Figure A2 in paper
+
+"""
+
+
 import datetime
 print ('Time at the start is: ', str(datetime.datetime.now()))
 
@@ -103,7 +111,7 @@ def plot_Mstar_Mdust(fil, z, axs, snapnum, i, on, k, label):
 def plot_figure(axs, z, xx, yy, yy_up, yy_low, k, label):
     
     if label != None:
-        axs.plot(xx, yy, lw = 1, color = colors[k], label = r'$t_{acc}=$'+label+r'$yrs$')
+        axs.plot(xx, yy, lw = 1, color = colors[k], label = r'$\tau_{\mathrm{acc}}=$'+label+r'$\mathrm{yrs}$')
     else:
         axs.plot(xx, yy, lw = 1, color = colors[k])
     axs.plot(xx, yy_up, lw = 1, ls = 'dashed', color = colors[k])
@@ -118,7 +126,7 @@ def plot_figure(axs, z, xx, yy, yy_up, yy_low, k, label):
     
 i = int(sys.argv[1])        
 
-filesMR = np.array(['../test_rmol/def_1e3/MR/SA_output_*', '../test_rmol/def_5e3/MR/SA_output_*', '../ap629/test_rmol/def_15e3/MR/SA_output_*', '../test_rmol/def_1e5/MR/SA_output_*', '../test_rmol/def_1e6/MR/SA_output_*'])
+filesMR = np.array(['../test_rmol/def_1e3/MR/SA_output_*', '../test_rmol/def_5e3/MR/SA_output_*', '../test_rmol/def_15e3/MR/SA_output_*', '../test_rmol/def_1e5/MR/SA_output_*', '../test_rmol/def_1e6/MR/SA_output_*'])
 filesMRII = np.array(['../test_rmol/def_1e3/MRII/SA_output_*', '../test_rmol/def_5e3/MRII/SA_output_*', '../test_rmol/def_15e3/MRII/SA_output_*', '../test_rmol/def_1e5/MRII/SA_output_*', '../test_rmol/def_1e6/MRII/SA_output_*'])
 
 
@@ -130,18 +138,18 @@ titles = np.array(['1e3', '5e3', '15e3', '1e5', '1e6'])
 fig, axs = plt.subplots(nrows = 1, ncols = 4, figsize=(20, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
 axs = axs.ravel()
 
-xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-ylab = r'$log_{10}(M_{dust}/(M_{\odot}))$'
+xlab = r'$\mathrm{log}_{10}(M_{*}/(M_{\odot}))$'
+ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/(M_{\odot}))$'
 savename = 'Dust_Stellar_diff_taccs'
 
 from obs_plots import DM_obs 
-z_ = np.array([0, 2, 4, 6])
+z_ = np.array([0, 2, 5, 6])
 for j, z in enumerate(z_):
     DM_obs(axs[j], z)   #Plotting the observational data points
     for k in range(0, len(labels)): 
         if i <= 1:
             add = plot_Mstar_Mdust(files[k], z, axs[j], snaps, i, False, k, labels[k])
-            lgd = axs[j].legend(fontsize = 16, markerscale=2, loc = 4, numpoints=1, handletextpad=0.005)
+            lgd = axs[j].legend(fontsize = 18, markerscale=2, loc = 4, numpoints=1, handletextpad=0.005)
             if np.isscalar(lgd):
                 lgd.set_zorder(100)
         else:
@@ -155,13 +163,13 @@ for j, z in enumerate(z_):
             add2 = plot_Mstar_Mdust(files[k], z, axs[j], snaps, 1, True, k, None)
             add = add1+'_'+add2
             
-    axs[j].text(8.65, 9.5, r'$z = {}$'.format(z), fontsize = 18)
+    axs[j].text(8.65, 9.5, r'$z = {}$'.format(z), fontsize = 20)
     
     
 fig.tight_layout()    
 fig.subplots_adjust(bottom=0.1, left = 0.08, wspace=0, hspace=0)
 fig.text(0.03, 0.5, ylab, va='center', rotation='vertical', fontsize=22)
 fig.text(0.5, 0.03, xlab, va='center', fontsize=22)
-plt.savefig(savename+add+'_taccs.eps')
+plt.savefig(savename+add+'_taccs.pdf')
 plt.close()
 print ('End time is ', str(datetime.datetime.now()))

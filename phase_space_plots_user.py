@@ -24,12 +24,12 @@ from astropy.cosmology import Planck13
         #####################################################################################
 """
     User inputs for producing the preferred plots:
-    0. Dust mass vs stellar mass plot for z = 0-9   (Figure 2 in paper)
+    0. Dust mass vs stellar mass plot for z = 0-9   (Figure 10 in paper)
     1. Dust mass vs Metallciity plot for z = 0-9
-    2. Dust-to-gas ratio (DGR) vs stellar mass for z = 0-9  (Figure 4 in paper)
-    3. DGR vs Metallicity for z = 0-9   (Figure 5 in paper)
-    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9    (Figure 6 in paper)
-    5. DTM ratio vs Metallicity for z = 0-9 (Figure 7 in paper)
+    2. Dust-to-gas ratio (DGR) vs stellar mass for z = 0-9  (Figure 8 in paper)
+    3. DGR vs Metallicity for z = 0-9   (Figure 9 in paper)
+    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9    (Figure 2 in paper)
+    5. DTM ratio vs Metallicity for z = 0-9 (Figure 4 in paper)
     6. Accretion timescale vs stellar mass plot for z = 0-9 (Figure A1 in paper)
     7. Accretion timescale vs metallicity plot for z = 0-9
 
@@ -63,14 +63,14 @@ axs = axs.ravel()
 
 if inp == 0:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\odot}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
     savename = 'Dust_Stellar_'
 
     from obs_plots import DM_obs
     from Mstar_Mdust import plot_Mstar_Mdust_user
 
-    for z in range(0, 1):
+    for z in range(0, 9):
         DM_obs(axs[z], z)   #Plotting the observational data points
         if i <= 1:
             add = plot_Mstar_Mdust_user(files, z, axs[z], snaps, i, False)
@@ -84,7 +84,7 @@ if inp == 0:
 elif inp == 1:
 
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\odot}))$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
     savename = 'Dust_metal_'
 
     from obs_plots import D_Met_obs
@@ -101,8 +101,8 @@ elif inp == 1:
 
 elif inp == 2:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
     savename = 'DGR_stell_'
 
     from obs_plots import DG_Mstar_obs
@@ -121,8 +121,8 @@ elif inp == 2:
 
 elif inp == 3:
 
-    xlab = r'$12+log_{10}(O/H)$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    xlab = r'$12+\mathrm{log}_{10}(O/H)$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
     savename = 'DGR_met_ratio_'
 
     from obs_plots import DG_met_obs
@@ -139,8 +139,8 @@ elif inp == 3:
 
 elif inp == 4:
 
-    xlab = r'$log_{10}(M_{*}/(M_{\odot}))$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\mathrm{Metal}}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
     savename = 'DTM_stellar_'
 
     from obs_plots import DTM_stell
@@ -154,13 +154,22 @@ elif inp == 4:
             add1 = plot_Mstar_DTM_user(files, z, axs[z], snaps, 0, True)
             add2 = plot_Mstar_DTM_user(files, z, axs[z], snaps, 1, True)
             add = add1+'_'+add2
-
+        
+        #Stellar production contribution
+        data = np.load('Stellar_dust_median/DTM_Mstar_{}_z{}.npz'.format('MRII', z))
+        xx = data['Mstar']
+        yy = data['DTM']
+        xx_interp = np.linspace(7.5, 11.5, 10)
+        yy_interp = np.interp(xx_interp, xx, yy)
+        axs[z].plot(xx_interp, yy_interp, ls = 'dotted', lw = 2, color = 'blue')
+        axs[z].axhline(np.log10(0.6344835603686649), ls = 'dotted', lw = 2, color = 'red')
+                
         axs[z].text(11, -1.5, r'$z = {}$'.format(z), fontsize = 18)
 
 elif inp == 5:
 
-    xlab = r'$12+log_{10}(O/H)$'
-    ylab = r'$log_{10}(M_{\mathrm{Dust}}/(M_{\mathrm{Metal}}))$'
+    xlab = r'$12+\mathrm{log}_{10}(O/H)$'
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
     savename = 'DTM_met_'
 
     from obs_plots import DTM_oxy
@@ -178,8 +187,8 @@ elif inp == 5:
 
 elif inp == 6:
 
-    xlab = r'$log_{10}(M_{*}/M_{\odot})$'
-    ylab = r'$log_{10}(t_{\mathrm{acc}})$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(\tau_{\mathrm{acc}})$'
     savename = 'Mstar_tacc_'
 
     from tacc_Mstar import plot_tacc_Mstar_user
@@ -202,7 +211,7 @@ elif inp == 6:
 elif inp == 7:
 
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$log_{10}(t_{\mathrm{acc}})$'
+    ylab = r'$\mathrm{log}_{10}(\tau_{\mathrm{acc}})$'
     savename = 'Met_tacc_'
 
     from tacc_Met import plot_tacc_Met_user
@@ -235,7 +244,7 @@ else:
     fig.text(0.01, 0.5, ylab, va='center', rotation='vertical', fontsize=24)
 
 fig.text(0.46, 0.04, xlab, va='center', fontsize=24)
-plt.savefig(savename+add+'_full_new.eps')
+plt.savefig(savename+add+'_full.pdf')
 #plt.close()
 #plt.show()
 print ('End time is ', str(datetime.datetime.now()))
