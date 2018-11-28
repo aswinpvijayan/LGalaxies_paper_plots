@@ -78,7 +78,7 @@ def get_vals(files, z, axs, snapnum, i, on):
 def plot_tacc_Met_user(files, z, axs, snapnum, i, on):
 
     add, met, tacc, Type, Age = get_vals(files, z, axs, snapnum, i, on)
-    x, y, xx, yy, yy_up, yy_low, den = outputs(met, tacc, Type, z)
+    x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(met, tacc, Type, z)
 
     x = 12. + np.log10(x)
     y = np.log10(y)
@@ -87,7 +87,7 @@ def plot_tacc_Met_user(files, z, axs, snapnum, i, on):
     yy_up = np.log10(yy_up)
     yy_low = np.log10(yy_low)
 
-    plot_figure(axs, z, x, y, xx, yy, yy_up, yy_low, den)
+    make_fig.fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den)
 
     xlim = [7.5,10.5]
     ylim = [5,10.5]

@@ -49,7 +49,7 @@ def get_vals(files, z, axs, snapnum, i, on):
 
         Mdust = np.nansum(Mdust, axis = 1)
 
-        Mratio = Mdust/Mcg   #Dust-to-total cold gas mass ratio. Dimensionless.
+        Mratio = Mdust/Mcg   #Dust-to-total metal mass ratio. Dimensionless.
 
         SFR = get_.get_var(files[i], 'Sfr', snap)[ok]
 

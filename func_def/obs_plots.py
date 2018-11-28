@@ -110,21 +110,21 @@ def DMF(axs, i):
     if(i == 0):
         axs.errorbar(VlahakisA_2005['DM'], np.log10(VlahakisA_2005['Phi']), yerr=[np.log10((VlahakisA_2005['Phi']+VlahakisA_2005['Phi_down_err'])/VlahakisA_2005['Phi']),np.log10((VlahakisA_2005['Phi']+VlahakisA_2005['Phi_up_err'])/VlahakisA_2005['Phi'])] ,color='g',label=r'$\mathrm{VlahakisA}$ $\mathrm{2005}$',fmt='.')
         axs.errorbar(VlahakisB_2005['DM'] ,np.log10(VlahakisB_2005['Phi']) ,yerr=[np.log10((VlahakisB_2005['Phi']+VlahakisB_2005['Phi_down_err'])/VlahakisB_2005['Phi']),np.log10((VlahakisB_2005['Phi']+VlahakisB_2005['Phi_up_err'])/VlahakisB_2005['Phi'])] ,color='red',label=r'$\mathrm{VlahakisB}$ $\mathrm{2005}$',fmt='.')
-        axs.errorbar(Clemens_2013['DM'], Clemens_2013['Phi'], xerr = np.ones(len(Clemens_2013['DM'])*0.3), yerr = [Clemens_2013['Phi_down_err'],Clemens_2013['Phi_up_err']],color='b',label=r'$\mathrm{Clemens}$ $\mathrm{2013}$',fmt='.') 
+        axs.errorbar(Clemens_2013['DM'], Clemens_2013['Phi'], xerr = np.ones(len(Clemens_2013['DM']))*0.3, yerr = [Clemens_2013['Phi_down_err'],Clemens_2013['Phi_up_err']],color='b',label=r'$\mathrm{Clemens}$ $\mathrm{2013}$',fmt='.') 
         
 def DTM_oxy(axs, i):
 
     if(i == 0):
-        axs.errorbar(RR_2015['Oxygen'], RR_2015['DTM_1B'], yerr=(0.75*RR_2015['DTM_1B']), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 
+        axs.errorbar(RR_2015['Oxygen'], RR_2015['DTM_1B']+np.log10(0.44), yerr=(0.75*RR_2015['DTM_1B']), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 
     if(i == 2):
-        axs.errorbar(Wiseman_2017['Metals_z2'],np.log10(Wiseman_2017['DTM_z2']*0.464), yerr = np.log10(Wiseman_2017['DTM_err_z2']/Wiseman_2017['DTM_z2']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        axs.errorbar(Wiseman_2017['Metals_z2'],np.log10(Wiseman_2017['DTM_z2']*0.464), xerr =  np.log10(Wiseman_2017['Metals_err_z2']), yerr = np.log10(Wiseman_2017['DTM_err_z2']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
     if(i == 3):
-        axs.errorbar(Wiseman_2017['Metals_z3'],np.log10(Wiseman_2017['DTM_z3']*0.464), yerr = np.log10(Wiseman_2017['DTM_err_z3']/Wiseman_2017['DTM_z3']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        axs.errorbar(Wiseman_2017['Metals_z3'],np.log10(Wiseman_2017['DTM_z3']*0.464),  xerr =  np.log10(Wiseman_2017['Metals_err_z3']), yerr = np.log10(Wiseman_2017['DTM_err_z3']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
     if(i == 4):
-        axs.errorbar(Wiseman_2017['Metals_z4'],np.log10(Wiseman_2017['DTM_z4']*0.464), yerr = np.log10(Wiseman_2017['DTM_err_z4']/Wiseman_2017['DTM_z4']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        axs.errorbar(Wiseman_2017['Metals_z4'],np.log10(Wiseman_2017['DTM_z4']*0.464),  xerr =  np.log10(Wiseman_2017['Metals_err_z4']), yerr = np.log10(Wiseman_2017['DTM_err_z4']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
 		
 def DTM_stell(axs, i):
 
     if(i == 0):
-        axs.errorbar(RR_2015['SM'], RR_2015['DTM_1B'], yerr=(0.75*RR_2015['DTM_1B']), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 
+        axs.errorbar(RR_2015['SM'], RR_2015['DTM_1B']+np.log10(0.44), yerr=(0.75*RR_2015['DTM_1B']), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 
 		

@@ -47,7 +47,7 @@ def get_var(files, var, snap):
     start = timeit.default_timer()
     print ('Reading in {} from snap {}...'.format(var, snap))    
     filess = get_files(files)
-    if snap in ['17', '16', '15', '14', '13', '12', '11', '10', '9', '8']:
+    if snap in ['17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7']:
         
         kill = np.array([])
         out = Parallel(n_jobs = 4)(delayed(get_)(i, ['Type', snap]) for i in filess)

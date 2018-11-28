@@ -31,7 +31,7 @@ def get_vals(files, z, axs, snapnum, i, on):
     if on and i == 0:
         ok = np.where(Mstar >= 10**8.9)[0]
     elif on and i == 1:
-        ok = np.logical_and(Mstar > 10**7.5, Mstar < 10**8.9)
+        ok = np.logical_and(Mstar > 10**6.0, Mstar < 10**8.9)
     else:
         ok = np.array([True]*len(Mstar))
         
@@ -76,26 +76,18 @@ def plot_Mstar_Mdust_user(files, z, axs, snapnum, i, on):
 
 def plot_Mstar_Mdust_median(files, z, axs, snapnum, i, on):
     
+    add = sims[i] 
+    
     Mstar, Mdust, Type = get_vals(files, z, axs, snapnum, i, on)
     
-    x, y, xx, yy, yy_up, yy_low, den = create_out.out_median(Mstar, Mdust, Type, z)
-    
-    xx, yy, yy_up, yy_low = outputs(Mstar, Mdust, Type, z)
+    xx, yy, yy_up, yy_low = create_out.out_median(Mstar, Mdust, Type, z)
     
     xx = np.log10(xx)
     yy = np.log10(yy)
     yy_up = np.log10(yy_up)
     yy_low = np.log10(yy_low)
     
-    make_fig.fig_med(axs, z, xx, yy, yy_up, yy_low, i)
-    
-    xlim = [7.5,12.7]
-    ylim = [1.5,10.5]
-    xticks = [8, 9, 10, 11, 12]
-    
-    axs.set_xlim(xlim)
-    axs.set_ylim(ylim)
-    axs.set_xticks(xticks)
+    make_fig.fig_median(axs, z, xx, yy, yy_up, yy_low, i)
     
     return add
     

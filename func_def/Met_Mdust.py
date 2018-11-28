@@ -74,7 +74,7 @@ def get_vals(files, z, axs, snapnum, i, on):
             i = 1
             snap = snapnum[i][np.where(redshift == str(z))[0][0]]
             tmp = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
-            ok = np.logical_and(tmp > 10**7.5, tmp < 10**8.9)
+            ok = np.logical_and(tmp > 10**6.0, tmp < 10**8.9)
             Mstar = np.append(Mstar, tmp[ok])
             
             Type = np.append(Type, get_.get_var(files[i], 'Type', snap)[ok])
@@ -133,7 +133,7 @@ def plot_O_H_vs_Dust_median(files, z, axs, snapnum, i, on):
     yy_up = np.log10(yy_up)
     yy_low = np.log10(yy_low)
     
-    make_fig.fig_med(axs, z, xx, yy, yy_up, yy_low, 1)
+    make_fig.fig_median(axs, z, xx, yy, yy_up, yy_low, 1)
     
     xlim = [6,10.5]
     ylim = [0.1,6.2]

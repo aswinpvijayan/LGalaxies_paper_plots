@@ -39,7 +39,7 @@ def out_median(x, y, Type, z):
     
     del out, x, y, Type
     
-    xx, yy, yy_up, yy_low = get_.get_median(thisx, thisy, n = 15)
+    xx, yy, yy_up, yy_low = get_.get_median(thisx, thisy, n = 10)
     
     return xx, yy, yy_up, yy_low
     
