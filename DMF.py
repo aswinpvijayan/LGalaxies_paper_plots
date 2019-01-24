@@ -44,8 +44,8 @@ MR_vol = (480.279/h)**3  #Millennium
 MRII_vol = (96.0558/h)**3 #Millennium II
 vol = np.array([MR_vol, MRII_vol])
 
-xlab = r'$\mathrm{log}_{10}(M_{\mathrm{dust}}/M_{\odot})$'
-ylab = r'$\mathrm{log}_{10}(\Phi/(M_{\odot}\mathrm{yr}^{-1}\mathrm{Mpc}^{-3}))$'
+xlab = r'$\mathrm{log}_{10}(\mathrm{M}_{\mathrm{Dust}}/\mathrm{M}_{\odot})$'
+ylab = r'$\mathrm{log}_{10}(\Phi/(\mathrm{M}_{\odot}\mathrm{yr}^{-1}\mathrm{Mpc}^{-3}))$'
 
 def outputs(x, y, sSFR, Type, z):
     
