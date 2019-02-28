@@ -3,8 +3,8 @@
 import sys
 import os
 import warnings
-#if not sys.warnoptions:
-#    warnings.simplefilter("ignore")
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
 import numpy as np
 import pandas as pd
 sys.path.append('func_def/')
@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import get_
 import seaborn as sns
 sns.set_context("paper")
+sns.set_style(style='white') 
 
 """
     Plot of depletions as a function of (1) stellar mass (2) metallicity of the corresponding galaxy
@@ -31,10 +32,8 @@ sims = np.array(['MR', 'MRII'])
 inp = int(sys.argv[1])
 i = int(sys.argv[2])
 
-#filesMR = '/lustre/scratch/astro/ap629/Dust_output_8june/MR/SA_output_*'
-filesMR = '/lustre/scratch/astro/ap629/Rob_dust_output/MR/SA_output_5.h5'
-#filesMRII = '/lustre/scratch/astro/ap629/Dust_output_8june/MRII/SA_output_*'
-filesMRII = '/lustre/scratch/astro/ap629/Rob_dust_output/MRII_sub/SA_output_*'
+filesMR = '../Dust_output/MR/SA_output_5.h5'
+filesMRII = '../Dust_output/MRII_sub/SA_output_*'
 files = np.array([filesMR, filesMRII])
 
 colors = ['red', 'blue', 'orange', 'green', 'violet', 'indigo', 'violet', 'brown', 'yellow']
@@ -46,15 +45,12 @@ def outputs(x, y, sSFR, Type, z):
     """
     Function remove_ is for removing any nan's, inifnities and other non-physical values, can specify if the zero values in the array should not be removed, by giving the array number as argument. It then selects the central halos which are above a particular sSFR. Returns the number density in a pixel and the median (in 13 bins in the x axis in logarithmic space) with the values of the 16th percentile and the 84th percentile.
     """
-    #out = np.array([x, y, sSFR, Type])
+    
     out = get_.remove_(np.array([x, y, sSFR, Type]), np.array([3]))  
     out = out[(out[3] == 0)]
     out = np.array(out).T
     thisx = out[0]
     thisy = out[1]
-    
-    #del out, x, y, sSFR, Type
-    
     
     xx, yy, yy_up, yy_low = get_.get_median(thisx, thisy, n = 10)
     
@@ -69,9 +65,9 @@ def plot_Mstar_dep(files, z, axs, snaps, i, on):
     snap = snaps[i][np.where(redshift == str(z))[0][0]]
     Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/0.673
     if on and i == 0:
-        ok = np.where(Mstar >= 10**8.85)[0]
+        ok = np.where(Mstar >= 10**9.0)[0]
     elif on and i == 1:
-        ok = np.logical_and(Mstar > 10**7.5, Mstar < 10**8.9)
+        ok = np.logical_and(Mstar > 10**7.2, Mstar < 10**9.0)
     else:
         ok = np.array([True]*len(Mstar))
     
@@ -89,10 +85,10 @@ def plot_Mstar_dep(files, z, axs, snaps, i, on):
     SFR = get_.get_var(files[i], 'Sfr', snap)[ok]
     
     sSFR = SFR/Mstar
+    ok = np.where(np.nansum(Mcg, axis = 1) > 1e6)
+    plot_figure(Mstar[ok], Mcg[ok], Mdust[ok], sSFR[ok], Type[ok], z, axs)
     
-    plot_figure(Mstar, Mcg, Mdust, sSFR, Type, z, axs)
-    
-    axs.set_xlim((7.7,11.6))
+    axs.set_xlim((7.5,11.6))
     axs.set_xticks([8, 9, 10, 11])
     
     return add
@@ -160,15 +156,18 @@ def plot_Z_dep(files, z, axs, snaps, i, on):
     
 def plot_figure(pltx, Mcg, Mdust, sSFR, Type, z, axs):
     
-    for l, k in enumerate([2,4,6,7,9,10]):
-    
-        x, y, xx, yy, yy_up, yy_low, den = outputs(pltx, Mdust[:,k]/Mcg[:,k], sSFR, Type, z)
-            
-        #axs[l].scatter(np.log10(x), y, marker = 'o', s=10, c = den, alpha = 1, edgecolors='None', cmap = plt.cm.get_cmap('gist_yarg'), norm = matplotlib.colors.LogNorm(vmin = min(den), vmax = max(den)))
+    for l, k in enumerate([4]):
         
-        axs.plot(np.log10(xx), yy, lw = 2, color = colors[l], label = arr[l])
-        axs.plot(np.log10(xx), yy_up, lw = 2, ls = 'dashed', color = colors[l])
-        axs.plot(np.log10(xx), yy_low, lw = 2, ls = 'dashed', color = colors[l])
+        plty = Mdust[:,k]/Mcg[:,k]
+        ok = np.logical_and(np.isnan(plty), np.isinf(plty))
+        x, y, xx, yy, yy_up, yy_low, den = outputs(pltx[~ok], plty[~ok], sSFR[~ok], Type[~ok], z)
+        x = np.log10(x)
+        gridsize = np.array([(int(max(x)-min(x))/0.05), int((max(y)-min(y))/0.05)]).astype(int)    
+        axs.hexbin(x, y, gridsize=gridsize, cmap = plt.cm.get_cmap('gist_yarg'), mincnt = 5)
+        
+        axs.plot(np.log10(xx), yy, color = colors[l], label = arr[l])
+        axs.plot(np.log10(xx), yy_up, ls = 'dashed', color = colors[l])
+        axs.plot(np.log10(xx), yy_low, ls = 'dashed', color = colors[l])
     
     for label in (axs.get_xticklabels() + axs.get_yticklabels()):
         label.set_fontsize(18)
@@ -179,8 +178,7 @@ def plot_figure(pltx, Mcg, Mdust, sSFR, Type, z, axs):
     
 
 
-#fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(15, 10), sharex=True, sharey=True, facecolor='w', edgecolor='k')  
-fig, axs = plt.subplots(nrows = 3, ncols = 4, figsize=(18, 12), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+fig, axs = plt.subplots(nrows = 3, ncols = 3, figsize=(15, 12), sharex=True, sharey=True, facecolor='w', edgecolor='k')
 axs = axs.ravel()
 
 if inp == 0:
@@ -189,12 +187,12 @@ if inp == 0:
     ylab = r'$log_{10}(M_{dust}/(M_{\odot}))$'
     savename = 'Depletion_Stellar_'
     
-    for z in range(0, 12):
+    for z in range(0, 9):
         if i <= 1:
             add = plot_Mstar_dep(files, z, axs[z], snaps, i, False)
         else:
             add1 = plot_Mstar_dep(files, z, axs[z], snaps, 0, True)
-            if z == 11:
+            if z == 8:
                 axs[z].legend(frameon=False, fontsize=15)
             add2 = plot_Mstar_dep(files, z, axs[z], snaps, 1, True)
             add = add1+'_'+add2
@@ -220,7 +218,7 @@ elif inp == 1:
 
 fig.tight_layout()    
 fig.subplots_adjust(bottom=0.09, left = 0.08, wspace=0, hspace=0)
-fig.text(0.03, 0.5, r'$Fraction$', va='center', rotation='vertical', fontsize=22)
-fig.text(0.5, 0.04, r'$log_{10}(M_{*}/M_{\odot})$', va='center', fontsize=22)
-plt.savefig(savename+add+'test.png')
+fig.text(0.03, 0.5, r'Fraction', va='center', rotation='vertical', fontsize=22)
+fig.text(0.5, 0.04, r'$\mathrm{log}_{10}(\mathrm{M}_{*}/\mathrm{M}_{\odot})$', va='center', fontsize=22)
+plt.savefig(savename+add+'_subsample.png')
 plt.close()

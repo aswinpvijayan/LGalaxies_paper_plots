@@ -26,6 +26,7 @@ import mbb
 import gc
 import seaborn as sns
 sns.set_context("paper")
+sns.set_style(style='white') 
 from astropy.cosmology import Planck13
 
         ###################################################################################
@@ -41,7 +42,7 @@ MR_vol = (480.279/h)**3  #Millennium
 MRII_vol = (96.0558/h)**3 #Millennium II
 fac = MR_vol/MRII_vol
 
-colors = ['orange', 'violet', 'cyan', 'magenta', 'brown', 'orange', 'black']
+colors = ['orange', 'violet', 'black', 'cyan', 'magenta', 'brown', 'orange']
 
 def outputs(x, y, sSFR, Type, z):
     
@@ -50,8 +51,7 @@ def outputs(x, y, sSFR, Type, z):
     """
     
     out = get_.remove_(np.array([x, y, sSFR, Type]), np.array([3]))  
-    out = out[(out[2] > get_.sSFR_cut(z)) & (out[3] == 0)]
-    #out = out[out[3] == 0]
+    out = out[out[3] == 0]
     out = np.array(out).T
     thisx = out[0]
     thisy = out[1]
@@ -126,14 +126,14 @@ def plot_figure(axs, z, xx, yy, yy_up, yy_low, k, label):
     
 i = int(sys.argv[1])        
 
-filesMR = np.array(['../test_rmol/def_1e3/MR/SA_output_*', '../test_rmol/def_5e3/MR/SA_output_*', '../test_rmol/def_15e3/MR/SA_output_*', '../test_rmol/def_1e5/MR/SA_output_*', '../test_rmol/def_1e6/MR/SA_output_*'])
-filesMRII = np.array(['../test_rmol/def_1e3/MRII/SA_output_*', '../test_rmol/def_5e3/MRII/SA_output_*', '../test_rmol/def_15e3/MRII/SA_output_*', '../test_rmol/def_1e5/MRII/SA_output_*', '../test_rmol/def_1e6/MRII/SA_output_*'])
+filesMR = np.array(['../test_rmol/def_5e3/MR/SA_output_*', '../test_rmol/def_1e4/MR/SA_output_*', '../test_rmol/def_5e4/MR/SA_output_*', '../test_rmol/def_1e5/MR/SA_output_*', '../test_rmol/def_1e6/MR/SA_output_*'])
+filesMRII = np.array(['../test_rmol/def_5e3/MRII/SA_output_*', '../test_rmol/def_1e4/MRII/SA_output_*', '../test_rmol/def_5e4/MRII/SA_output_*', '../test_rmol/def_1e5/MRII/SA_output_*', '../test_rmol/def_1e6/MRII/SA_output_*'])
 
 
 files = np.hstack([np.array([filesMR]).T, np.array([filesMRII]).T])
 
-labels = np.array([r'$10^3$', r'$5\times 10^3$', r'$15\times 10^3$', r'$10^5$', r'$10^6$'])
-titles = np.array(['1e3', '5e3', '15e3', '1e5', '1e6'])
+labels = np.array([r'$5\times 10^3$', r'$10^4$', r'$5\times 10^4$', r'$10^5$', r'$10^6$'])
+titles = np.array(['5e3', '1e4', '5e4', '1e5', '1e6'])
 
 fig, axs = plt.subplots(nrows = 1, ncols = 4, figsize=(20, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
 axs = axs.ravel()

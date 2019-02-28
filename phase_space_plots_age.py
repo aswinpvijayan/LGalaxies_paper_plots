@@ -19,6 +19,7 @@ import mbb
 import gc
 import seaborn as sns
 sns.set_context("paper")
+sns.set_style(style='white')
 from astropy.cosmology import Planck13
 from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
@@ -29,7 +30,7 @@ from mpl_toolkits.axes_grid.inset_locator import inset_axes
     1. Dust mass vs Metallciity plot for z = 0-9
     2. Dust-to-gas ratio (DGR) vs stellar mass for z = 0-9
     3. DGR vs Metallicity for z = 0-9
-    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9  (Figure 3 in paper)
+    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9  (Figure 4 in paper)
     5. DTM ratio vs Metallicity for z = 0-9
     6. Accretion timescale vs stellar mass plot for z = 0-9
     7. Accretion timescale vs metallicity plot for z = 0-9
@@ -38,8 +39,8 @@ from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
     i = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII
 """
-filesMR = '../Rob_dust_output/MR/SA_output_*'
-filesMRII = '../Rob_dust_output/MRII/SA_output_*'
+filesMR = '../Dust_output/MR/SA_output_*'
+filesMRII = '../Dust_output/MRII/SA_output_*'
 files = np.array([filesMR, filesMRII])
 
 inp, i = int(sys.argv[1]), int(sys.argv[2])
@@ -82,8 +83,9 @@ if inp == 0:
 
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
-
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
         cbaxes.set_zorder(1)
         axs[z].text(8.45, 2.5, r'$z = {}$'.format(z), fontsize = 19)
 
@@ -106,7 +108,9 @@ elif inp == 1:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
         cbaxes.set_zorder(1)
         axs[z].text(7.75, 9, r'$z = {}$'.format(z), fontsize = 18)
 
@@ -131,7 +135,9 @@ elif inp == 2:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
         cbaxes.set_zorder(1)
         axs[z].text(8.75, -1, r'$z = {}$'.format(z), fontsize = 18)
 
@@ -154,7 +160,9 @@ elif inp == 3:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
         cbaxes.set_zorder(1)
         axs[z].text(10, -5, r'$z = {}$'.format(z), fontsize = 18)
 
@@ -176,11 +184,14 @@ elif inp == 4:
             add2, p, den = plot_Mstar_DTM_age(files, z, axs[z], snaps, 1, True)
             add = add1+'_'+add2
 
-        cbaxes = inset_axes(axs[z], width="93%", height="3%", loc=9)
+        cbaxes = inset_axes(axs[z], width="95%", height="3%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
+        #cbaxes.set_xlabel(r'$\mathrm{Mean}$ $\mathrm{Stellar}$ $\mathrm{Age}$ / $\mathrm{Gyr}$', fontsize = 18)
         cbaxes.set_zorder(1)
-        axs[z].text(11, -1.5, r'$z = {}$'.format(z), fontsize = 18)
+        axs[z].text(10.95, -1.5, r'$z = {}$'.format(z), fontsize = 18)
 
 elif inp == 5:
 
@@ -191,7 +202,7 @@ elif inp == 5:
     from obs_plots import DTM_oxy
     from DTM_Met import plot_O_H_vs_DTM_age
 
-    for z in range(0, 1):
+    for z in range(0, 9):
         DTM_oxy(axs[z], z)
         if i <= 1:
             add, p, den = plot_O_H_vs_DTM_age(files, z, axs[z], snaps, i, False)
@@ -201,9 +212,11 @@ elif inp == 5:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
         cbaxes.set_zorder(1)
-        axs[z].text(10, -1, r'$z = {}$'.format(z), fontsize = 18)
+        axs[z].text(9.5, -1, r'$z = {}$'.format(z), fontsize = 18)
 
 
 elif inp == 6:
@@ -228,7 +241,9 @@ elif inp == 6:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
         cbaxes.set_zorder(1)
         axs[z].text(8.2, 5.7, r'$z = {}$'.format(z), fontsize = 18)
         if z != 0:
@@ -254,7 +269,9 @@ elif inp == 7:
         cbaxes = inset_axes(axs[z], width="95%", height="2%", loc=9)
         fig.colorbar(p, cax=cbaxes, orientation='horizontal')
 
-        cbaxes.set_xticklabels([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)], fontsize=13)
+        age = np.array([max(0.01, np.round(x, 2)) for x in cbaxes.get_xticks()*max(den)]).astype(str)
+        age_label = np.array([i[:4] for i in age])
+        cbaxes.set_xticklabels(age_label, fontsize=13)
         cbaxes.set_zorder(1)
         axs[z].text(8.2, 5.7, r'$z = {}$'.format(z), fontsize = 18)
         if z != 0:
@@ -269,6 +286,7 @@ else:
 
 fig.tight_layout()
 fig.subplots_adjust(bottom=0.09, left = 0.08, wspace=0, hspace=0)
+#fig.subplots_adjust(bottom=0.14, left = 0.20, wspace=0, hspace=0)
 if inp not in [4, 5]:
     fig.text(0.03, 0.5, ylab, va='center', rotation='vertical', fontsize=26)
 else:

@@ -12,19 +12,20 @@ import matplotlib.pyplot as plt
 import get_
 import seaborn as sns
 sns.set_context("paper")
+sns.set_style(style='white') 
 
             ##########################################################################
 """
     User inputs for producing the preferred plots: 
     0 - Cosmic dust rate versus redshift    (Figure 6 in paper)
-    1 - Dust production rate versus Stellar Mass for different redshifts    (Figure 7 in paper)
+    1 - Dust production rate versus Stellar Mass for different redshifts    (Figure 8 in paper)
     1 - Dust production rate versus Metallicity for different redshifts
     
     inp = user input for preferred plot
     
     z_inp = For plotting different redshift range. 
-    0 - [0, 8]  (Figure 6 in paper)
-    1 - [9, 13] (Figure 12c in paper)
+    0 - [0, 8]  (Figure 6, 8 in paper)
+    1 - [9, 13] (Figure 13c in paper)
     2 - [0, 13]
             
     i = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII        
@@ -32,8 +33,8 @@ sns.set_context("paper")
 
 h = 0.673 #little h as used in the model
 
-filesMR = '../Rob_dust_output/MR/SA_output_*'
-filesMRII = '../Rob_dust_output/MRII/SA_output_*'
+filesMR = '../Dust_output/MR/SA_output_*'
+filesMRII = '../Dust_output/MRII/SA_output_*'
 files = np.array([filesMR, filesMRII])
 
 redshift = np.array(['0',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9', '10', '11', '12', '13', '14'])
@@ -67,7 +68,7 @@ if inp == 0:
     ylab = r'$\mathrm{log}_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}\mathrm{Mpc}^{-3}))$'
     savename2 = 'dust_prod_rate_redshift'
 elif inp == 1:
-    xlab = r'$\mathrm{log}_{10}(M_{*}/(M_{\odot}))$'
+    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
     ylab = r'$\mathrm{log}_{10}(\Phi_{\mathrm{DR}}/(M_{\odot}\mathrm{yr}^{-1}))$'
     savename2 = 'dust_prod_rate_Mstar'
 elif inp == 2:
@@ -83,13 +84,13 @@ if z_inp == 0:
     savename1 = 'z0_8'
     r = c = 3
     if inp == 0 or inp == 1:
-        xlim = [7.5,12.5]
-        #xticks = [8, 9, 10, 11, 12]
-        ylim = [-6, 2.5]
+        xlim = [7.5,11.5]
+        xticks = [8, 9, 10, 11]
+        ylim = [-6, 1.5]
     else:
         xlim = [7.3,10.7]
         xticks = [8, 9, 10]
-        ylim = [-8, 2.5]
+        ylim = [-8, 1.5]
     
 elif z_inp == 1:
     z_ = high_z
@@ -102,7 +103,7 @@ elif z_inp == 1:
     else:
         xlim = [7.3,10.7]
         xticks = [8, 9, 10]
-        ylim = [-8, 2.5]
+        ylim = [-8, 1.5]
 
 elif z_inp == 2:
     z_ = all_z
@@ -112,11 +113,11 @@ elif z_inp == 2:
     if inp == 0 or inp == 1:
         xlim = [6,11.8]
         xticks = [6, 7, 8, 9, 10, 11]
-        ylim = [-6, 2.5]
+        ylim = [-6, 1.5]
     else:
         xlim = [7.3,10.7]
         xticks = [8, 9, 10]
-        ylim = [-8, 2.5]
+        ylim = [-8, 1.5]
 else:
     print ('Not an applicable choice, retry....')
     sys.exit()  
@@ -125,19 +126,20 @@ def dust_prod_rate_redshift(files, z, snap, i):
 
     
     Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
+    Type = get_.get_var(files[i], 'Type', snap)
     Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)
     Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)
     Mdust = Mdust1 + Mdust2
     SFR = get_.get_var(files[i], 'Sfr', snap)
     sSFR = SFR/Mstar
-    Type = get_.get_var(files[i], 'Type', snap)
     dustrates = get_.get_var(files[i], 'DustColdGasRates', snap)
     Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)
     Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)
     Mcg = Mcg1 + Mcg2
-    Z = (Mcg[:,4])/(15.9994*(Mcg[:,0]))  #O/H ratio
+    Z = (Mcg[:,4]-Mdust[:,4])/(15.9994*(Mcg[:,0]))  #O/H ratio
     #Z = np.nansum(Mcg[:,2:], axis = 1)/np.nansum(Mcg, axis = 1)
     Mdust = np.nansum(Mdust, axis = 1)
+    Mcg = np.nansum(Mcg, axis = 1)
     ok = np.logical_and(sSFR > get_.sSFR_cut(z), np.logical_and(Mdust > 0.0, Type == 0))
         
     dustrates = dustrates[ok]
@@ -150,8 +152,12 @@ def dust_prod_rate_redshift(files, z, snap, i):
 if inp == 0:
     if z_inp == 1:
         fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(6, 6), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+        bottom = 0.125
+        left = 0.17
     else:
         fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 12), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+        bottom = 0.1
+        left = 0.11
     
     pAGB = pSNII = pSNIA = pGG = dest = pNET = pSFR = np.array([])
     for z in z_:
@@ -169,13 +175,13 @@ if inp == 0:
         pNET = np.append(pNET, np.nansum(dustrates[:4]) - dustrates[4])
         pSFR = np.append(pSFR, SFR)
         
-    axs.plot(z_, np.log10(pAGB), label = r'$AGB$', color='b', linewidth = 2)
-    axs.plot(z_, np.log10(pSNII), label = r'$SNII$', color='r', linewidth = 2)
-    axs.plot(z_, np.log10(pSNIA), label = r'$SNIA$', color='y', linewidth = 2)
-    axs.plot(z_, np.log10(pGG), label = r'$GG$', color='g', linewidth = 2)
-    axs.plot(z_, np.log10(dest), label = r'$DEST$', color='k', linewidth = 2)
-    axs.plot(z_, np.log10(pNET), label = r'$NET$', color='orange', linewidth = 2)
-    axs.plot(z_, np.log10(pSFR), label = r'$SFR$', color='cyan', linewidth = 2, ls = 'dashed')
+    axs.plot(z_, np.log10(pAGB), label = r'$\mathrm{AGB}$', color='b', linewidth = 2)
+    axs.plot(z_, np.log10(pSNII), label = r'$\mathrm{SNII}$', color='r', linewidth = 2)
+    axs.plot(z_, np.log10(pSNIA), label = r'$\mathrm{SNIA}$', color='y', linewidth = 2)
+    axs.plot(z_, np.log10(pGG), label = r'$\mathrm{GG}$', color='g', linewidth = 2)
+    axs.plot(z_, np.log10(dest), label = r'$\mathrm{DEST}$', color='k', linewidth = 2)
+    axs.plot(z_, np.log10(pNET), label = r'$\mathrm{NET}$', color='orange', linewidth = 3)
+    axs.plot(z_, np.log10(pSFR), label = r'$\mathrm{SFR}$', color='cyan', linewidth = 2, ls = 'dashed')
     
     lgd = axs.legend(frameon=False, fontsize = 16, markerscale=2, loc = 3, numpoints=1, handletextpad=0.005)
     lgd.set_zorder(100)
@@ -186,10 +192,11 @@ if inp == 0:
 
 elif inp == 1:
 
-    fig, axs = plt.subplots(nrows = 3, ncols = 3, figsize=(15, 13), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+    fig, axs = plt.subplots(nrows = 1, ncols = 3, figsize=(15, 6), sharex=True, sharey=True, facecolor='w', edgecolor='k')
     axs = axs.ravel()
-    
-    for j, z in enumerate(z_):
+    bottom=0.13 
+    left = 0.08
+    for j, z in enumerate([0, 7, 8]):
         
         if i in [0,1]:
             snap = snaps[i][np.where(redshift == str(z))[0][0]]
@@ -197,14 +204,14 @@ elif inp == 1:
         else:
             snap = snaps[0][np.where(redshift == str(z))[0][0]]
             dustrates, Mstar, SFR, Z = dust_prod_rate_redshift(files, z, snap, 0)
-            ok = np.where(Mstar >= 10**8.9)
+            ok = np.where(Mstar > 10**9.0)
             dustrates = dustrates[ok]
             Mstar = Mstar[ok]
             SFR = SFR[ok]
             Z = Z[ok]
             snap = snaps[1][np.where(redshift == str(z))[0][0]]
             tmp1, tmp2, tmp3, tmp4 = dust_prod_rate_redshift(files, z, snap, 1)
-            ok = np.logical_and(tmp2 > 10**5.95, tmp2 < 10**8.9)
+            ok = np.logical_and(tmp2 > 10**7.0, tmp2 < 10**9.0)
             
             dustrates = np.append(dustrates, tmp1[ok], axis = 0)
             Mstar = np.append(Mstar, tmp2[ok], axis = 0)
@@ -214,28 +221,28 @@ elif inp == 1:
         
         x = Mstar
         
-        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,0], n = 13)
-        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$AGB$', color='b', linewidth = 2)
+        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,0], n = 12)
+        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$\mathrm{AGB}$', color='b', linewidth = 2)
         axs[j].plot(np.log10(xx), np.log10(yy_up), color='b', linewidth = 2, ls = 'dashed')
         axs[j].plot(np.log10(xx), np.log10(yy_low), color='b', linewidth = 2, ls = 'dashed')
 
-        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,1], n = 13)
-        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$SNII$', color='r', linewidth = 2)
+        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,1], n = 12)
+        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$\mathrm{SNII}$', color='r', linewidth = 2)
         axs[j].plot(np.log10(xx), np.log10(yy_up), color='r', linewidth = 2, ls = 'dashed')
         axs[j].plot(np.log10(xx), np.log10(yy_low), color='r', linewidth = 2, ls = 'dashed')
         
-        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,2], n = 13)
-        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$SNIA$', color='y', linewidth = 2)
+        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,2], n = 12)
+        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$\mathrm{SNIA}$', color='y', linewidth = 2)
         axs[j].plot(np.log10(xx), np.log10(yy_up), color='y', linewidth = 2, ls = 'dashed')
         axs[j].plot(np.log10(xx), np.log10(yy_low), color='y', linewidth = 2, ls = 'dashed')
         
-        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,3], n = 13)
-        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$Grain$ $Growth$', color='g', linewidth = 2)
+        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,3], n = 12)
+        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$\mathrm{Grain}$ $\mathrm{Growth}$', color='g', linewidth = 2)
         axs[j].plot(np.log10(xx), np.log10(yy_up), color='g', linewidth = 2, ls = 'dashed')
         axs[j].plot(np.log10(xx), np.log10(yy_low), color='g', linewidth = 2, ls = 'dashed')
         
-        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,4], n = 13)
-        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$Destruction$', color='k', linewidth = 2)
+        xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,4], n = 12)
+        axs[j].plot(np.log10(xx), np.log10(yy), label = r'$\mathrm{Destruction}$', color='k', linewidth = 2)
         axs[j].plot(np.log10(xx), np.log10(yy_up), color='k', linewidth = 2, ls = 'dashed')
         axs[j].plot(np.log10(xx), np.log10(yy_low), color='k', linewidth = 2, ls = 'dashed')
         
@@ -244,10 +251,10 @@ elif inp == 1:
         #axs[j].plot(np.log10(xx), np.log10(yy_up), color='brown', linewidth = 2, ls = 'dashed')
         #axs[j].plot(np.log10(xx), np.log10(yy_low), color='brown', linewidth = 2, ls = 'dashed')
         
-        axs[j].text(7.9, 1.5, r'$z = {}$'.format(z), fontsize = 18)
+        axs[j].text(9.5, 0.5, r'$z = {}$'.format(z), fontsize = 18)
         
         
-        #axs[j].set_xticks(xticks)
+        axs[j].set_xticks(xticks)
         axs[j].set_xlim(xlim)
         axs[j].set_ylim(ylim)
         if z == z_[-1]:
@@ -265,7 +272,8 @@ elif inp == 2:
 
     fig, axs = plt.subplots(nrows = r, ncols = c, figsize=(15, 13), sharex=True, sharey=True, facecolor='w', edgecolor='k')
     axs = axs.ravel()
-    
+    bottom=0.13 
+    left = 0.08
     for j, z in enumerate(z_):
         
         if i in [0,1]:
@@ -288,27 +296,27 @@ elif inp == 2:
         x = Z
         
         xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,0], n = 13)
-        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$AGB$', color='b', linewidth = 2)
+        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$\mathrm{AGB}$', color='b', linewidth = 2)
         axs[j].plot(12. + np.log10(xx), np.log10(yy_up), color='b', linewidth = 2, ls = 'dashed')
         axs[j].plot(12. + np.log10(xx), np.log10(yy_low), color='b', linewidth = 2, ls = 'dashed')
 
         xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,1], n = 13)
-        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$SNII$', color='r', linewidth = 2)
+        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$\mathrm{SNII}$', color='r', linewidth = 2)
         axs[j].plot(12. + np.log10(xx), np.log10(yy_up), color='r', linewidth = 2, ls = 'dashed')
         axs[j].plot(12. + np.log10(xx), np.log10(yy_low), color='r', linewidth = 2, ls = 'dashed')
         
         xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,2], n = 13)
-        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$SNIA$', color='y', linewidth = 2)
+        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$\mathrm{SNIA}$', color='y', linewidth = 2)
         axs[j].plot(12. + np.log10(xx), np.log10(yy_up), color='y', linewidth = 2, ls = 'dashed')
         axs[j].plot(12. + np.log10(xx), np.log10(yy_low), color='y', linewidth = 2, ls = 'dashed')
         
         xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,3], n = 13)
-        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$Grain$ $Growth$', color='g', linewidth = 2)
+        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$\mathrm{Grain}$ $\mathrm{Growth}$', color='g', linewidth = 2)
         axs[j].plot(12. + np.log10(xx), np.log10(yy_up), color='g', linewidth = 2, ls = 'dashed')
         axs[j].plot(12. + np.log10(xx), np.log10(yy_low), color='g', linewidth = 2, ls = 'dashed')
         
         xx, yy, yy_up, yy_low = get_.get_median(x, dustrates[:,4], n = 13)
-        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$Destruction$', color='k', linewidth = 2)
+        axs[j].plot(12. + np.log10(xx), np.log10(yy), label = r'$\mathrm{Destruction}$', color='k', linewidth = 2)
         axs[j].plot(12. + np.log10(xx), np.log10(yy_up), color='k', linewidth = 2, ls = 'dashed')
         axs[j].plot(12. + np.log10(xx), np.log10(yy_low), color='k', linewidth = 2, ls = 'dashed')
         
@@ -335,7 +343,7 @@ elif inp == 2:
 
 
 fig.tight_layout()    
-fig.subplots_adjust(bottom=0.12, left = 0.1, wspace=0, hspace=0)
+fig.subplots_adjust(bottom = bottom, left = left, wspace=0, hspace=0)
 fig.text(0.01, 0.52, ylab, va='center', rotation='vertical', fontsize=24)
 fig.text(0.49, 0.05, xlab, va='center', fontsize=26)
 plt.savefig(savename1+savename2+savename3+'_full.pdf')

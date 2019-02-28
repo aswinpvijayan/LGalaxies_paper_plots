@@ -49,17 +49,17 @@ for i in range(0, len(mu_array)):
         fi=f[:,1]
         
         if i == 0 and j == 0:
-            axs[i, j].semilogx(t,fc,color='blue',label=r'$f_C$')
-            axs[i, j].semilogx(t,fi,color='green',label=r'$f_D$')
+            axs[i, j].semilogx(t,fc,color='blue',label=r'$\mathrm{f_{C}}$')
+            axs[i, j].semilogx(t,fi,color='green',label=r'$\mathrm{g_C}$')
             axs[i, j].plot([t_e,t_e],[0.,1.],':',color='red')
             axs[i, j].plot([t_e*(1.-mu)/mu,t_e*(1.-mu)/mu],[0.,1.],'-.',color='orange')
-            axs[i, j].axhline(y = 0.7, ls = '-.',label = r'$f_{\mathrm{C,max}}$',color='blue')
+            axs[i, j].axhline(y = 0.7, ls = '-.',label = r'$\mathrm{f_{C,max}}$',color='blue')
             axs[i, j].legend(frameon=False, fontsize = 19, loc = 0)
         if i == 0 and j == 1:
             axs[i, j].semilogx(t,fc,color='blue')
             axs[i, j].semilogx(t,fi,color='green')
-            axs[i, j].plot([t_e,t_e],[0.,1.],':',color='red',label=r'$\frac{\tau_{\mathrm{exch}}}{t_{\mathrm{acc}}}$')
-            axs[i, j].plot([t_e*(1.-mu)/mu,t_e*(1.-mu)/mu],[0.,1.],'-.',color='orange',label=r'$\frac{\tau_{\mathrm{exch}}^\prime}{t_{\mathrm{acc}}}$')
+            axs[i, j].plot([t_e,t_e],[0.,1.],':',color='red',label=r'$\frac{\tau_{\mathrm{exch}}}{\mathrm{t_{acc}}}$')
+            axs[i, j].plot([t_e*(1.-mu)/mu,t_e*(1.-mu)/mu],[0.,1.],'-.',color='orange',label=r'$\frac{\tau_{\mathrm{exch}}^\prime}{\mathrm{t_{acc}}}$')
             axs[i, j].axhline(y = 0.7, ls = '-.',color='blue')
             axs[i, j].legend(frameon=False, fontsize = 25, loc = 0)
         else:
@@ -81,18 +81,18 @@ for i in range(0, len(mu_array)):
             
 
 
-fig.subplots_adjust(bottom=0.1, left = 0.1, wspace=0, hspace=0.18)
+fig.subplots_adjust(bottom=0.1, left = 0.1, wspace=0, hspace=0.13)
 
 fig.text(0.12, 0.92, r'$\mu=0.05,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=0.01$', va='center', fontsize=19)
 fig.text(0.40, 0.92, r'$\mu=0.05,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=1$', va='center', fontsize=19)
 fig.text(0.67, 0.92, r'$\mu=0.05,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=100$', va='center', fontsize=19)
 
-fig.text(0.12, 0.488, r'$\mu=0.9,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=0.01$', va='center', fontsize=19)
-fig.text(0.40, 0.488, r'$\mu=0.9,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=1$', va='center', fontsize=19)
-fig.text(0.67, 0.488, r'$\mu=0.9,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=100$', va='center', fontsize=19)
+fig.text(0.12, 0.495, r'$\mu=0.9,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=0.01$', va='center', fontsize=19)
+fig.text(0.40, 0.495, r'$\mu=0.9,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=1$', va='center', fontsize=19)
+fig.text(0.67, 0.495, r'$\mu=0.9,\ \tau_{\mathrm{exch}}/\tau_{\mathrm{acc}}=100$', va='center', fontsize=19)
 
-fig.text(0.01, 0.5, r'$f_{\mathrm{MC}},\ f_{\mathrm{D}}$', va='center', rotation='vertical', fontsize=22)
-fig.text(0.5, 0.035, r'$t/\tau_{\mathrm{acc}}$', va='center', fontsize=22)
+fig.text(0.03, 0.5, r'$\mathrm{f_{C}},\ \mathrm{g_{C}}$', va='center', rotation='vertical', fontsize=22)
+fig.text(0.5, 0.035, r'$\mathrm{t}/\tau_{\mathrm{acc}}$', va='center', fontsize=22)
 
-plt.savefig('fc_fd.pdf')
+plt.savefig('fc_gc.pdf', bbox_inches='tight')
 plt.show()

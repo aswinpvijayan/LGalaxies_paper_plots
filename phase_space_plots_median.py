@@ -19,34 +19,36 @@ import mbb
 import gc
 import seaborn as sns
 sns.set_context("paper")
+sns.set_style(style='white')
 from astropy.cosmology import Planck13
 
         #####################################################################################
 """
     User inputs for producing the preferred plots:
-    0. Dust mass vs stellar mass plot    (Figure 12b in paper)
+    0. Dust mass vs stellar mass plot    (Figure 13b in paper)
     2. Dust-to-gas ratio (DGR) vs stellar mass 
     3. DGR vs Metallicity
-    4. Dust-to-metal (DTM) ratio vs Stellar mass   (Figure 12a in paper)
+    4. Dust-to-metal (DTM) ratio vs Stellar mass   (Figure 13a in paper)
     5. DTM ratio vs Metallicity
     6. Accretion timescale vs stellar mass plot
     7. Accretion timescale vs metallicity plot
 
     inp = user input for preferred plot
 
-    i = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII
-
     z_inp = Select redshift (z) range to plot:
     0. [0, 8]
     1. [9, 13]
     2. [0, 13]
+
+    i = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII
+
 """
 
-filesMR = '../Rob_dust_output/MR/SA_output_*'
-filesMRII = '../Rob_dust_output/MRII/SA_output_*'
+filesMR = '../Dust_output/MR/SA_output_*'
+filesMRII = '../Dust_output/MRII/SA_output_*'
 files = np.array([filesMR, filesMRII])
 
-inp, i, z_inp = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
+inp, z_inp, i = int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3])
 
         ###################################################################################
 
@@ -86,8 +88,8 @@ fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(6, 6), sharex=True, share
 
 if inp == 0:
 
-    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
-    ylab = r'$\mathrm{log}_{10}(M_{Dust}/(M_{*}))$'
+    xlab = r'$\mathrm{log}_{10}(\mathrm{M}_{*}/\mathrm{M}_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(\mathrm{M}_{\mathrm{Dust}}/M_{*})$'
     savename = 'Dust_Stellar_'
 
     from Mstar_Mdust import plot_Mstar_Mdust_median
@@ -96,7 +98,7 @@ if inp == 0:
         ylim = [1.5,10.8]
         xticks = [8, 9, 10, 11]
     else:
-        xlim = [6.5,11.7]
+        xlim = [7,11.7]
         ylim = [1.5,6.5]
         xticks = [7, 8, 9, 10, 11]
         
@@ -105,9 +107,9 @@ if inp == 0:
             add = plot_Mstar_Mdust_median(files, z, axs, snaps, i, False)
         else:
             add1 = plot_Mstar_Mdust_median(files, z, axs, snaps, 0, True)
-            print ('MR: z={}'.format(z))
+            #print ('MR: z={}'.format(z))
             add2 = plot_Mstar_Mdust_median(files, z, axs, snaps, 1, True)
-            print ('MRII: z={}'.format(z))
+            #print ('MRII: z={}'.format(z))
             add = add1+'_'+add2
     
     axs.set_xlim(xlim)
@@ -117,7 +119,7 @@ if inp == 0:
 elif inp == 1:
 
     xlab = r'$12+\mathrm{log}_{10}(\mathrm{O/H})$'
-    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(\mathrm{M}_{\mathrm{Dust}}/\mathrm{M}_{\odot})$'
     savename = 'Dust_metal_'
 
     from Met_Mdust import plot_O_H_vs_Dust_median
@@ -130,8 +132,8 @@ elif inp == 1:
 
 elif inp == 2:
 
-    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
-    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    xlab = r'$\mathrm{log}_{10}(\mathrm{M}_{*}/\mathrm{M}_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(\mathrm{M}_{\mathrm{Dust}}/\mathrm{M}_{\mathrm{Cold gas}})$'
     savename = 'DGR_stell_'
 
     from DGR_Mstar import plot_DGR_Mstar_median
@@ -147,7 +149,7 @@ elif inp == 2:
 elif inp == 3:
 
     xlab = r'$12+\mathrm{log}_{10}(O/H)$'
-    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Cold gas}})$'
+    ylab = r'$\mathrm{log}_{10}(\mathrm{M}_{\mathrm{Dust}}/\mathrm{M}_{\mathrm{Cold gas}})$'
     savename = 'DGR_met_ratio_'
 
     from DGR_Met import plot_O_H_vs_DGR_median
@@ -160,20 +162,18 @@ elif inp == 3:
 
 elif inp == 4:
 
-    xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
-    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
+    xlab = r'$\mathrm{log}_{10}(\mathrm{M}_{*}/\mathrm{M}_{\odot})$'
+    ylab = r'$\mathrm{log}_{10}(\mathrm{M}_{\mathrm{Dust}}/\mathrm{M}_{\mathrm{Metal}})$'
     savename = 'DTM_stellar_'
     
     if z_inp == 0:
         xlim = [7.5, 11.7]
-        ylim = [-3, 0]
+        ylim = [-2, 0]
         xticks = [8, 9, 10, 11]
-        yticks = [-3, -2, -1, 0]
     else:
-        xlim = [6.5,11.3]
-        ylim = [-3.5, -1.5]
+        xlim = [7,11.3]
+        ylim = [-2.5, -1.5]
         xticks = [7, 8, 9, 10, 11]
-        yticks = [-3, -2]
 
     from DTM_Mstar import plot_Mstar_DTM_median
 
@@ -191,12 +191,12 @@ elif inp == 4:
     axs.set_xlim(xlim)
     axs.set_ylim(ylim)
     axs.set_xticks(xticks)
-    axs.set_yticks(yticks)
+    #axs.set_yticks(yticks)
     
 elif inp == 5:
 
     xlab = r'$12+\mathrm{log}_{10}(O/H)$'
-    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\mathrm{Metal}})$'
+    ylab = r'$\mathrm{log}_{10}(\mathrm{M}_{\mathrm{Dust}}/\mathrm{M}_{\mathrm{Metal}})$'
     savename = 'DTM_met_'
 
     from DTM_Met import plot_O_H_vs_DTM_median
