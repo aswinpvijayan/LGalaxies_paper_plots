@@ -47,10 +47,12 @@ def get_var(files, var, snap):
     start = timeit.default_timer()
     print ('Reading in {} from snap {}...'.format(var, snap))    
     filess = get_files(files)
+    
     if snap in ['17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7']:
         
         kill = np.array([])
         out = Parallel(n_jobs = 4)(delayed(get_)(i, ['Type', snap]) for i in filess)
+        
         for i in range(0, len(out)):
             if len(out[i]) == 0:
                 
@@ -60,7 +62,7 @@ def get_var(files, var, snap):
             
             filess = np.delete(filess, kill)
         
-    out = Parallel(n_jobs = 4)(delayed(get_)(i, [var, snap]) for i in filess)  
+    out = Parallel(n_jobs = 16)(delayed(get_)(i, [var, snap]) for i in filess)  
     out = np.concatenate(out, axis = 0)
     
     stop = timeit.default_timer()
@@ -88,21 +90,21 @@ def remove_(x, turn_off = [10**20]):
         df = pd.DataFrame(data = np.array(df), index = range(0,len(df[0])))
     
         if i not in turn_off:
-            ok = np.where(df[i]>0)[0]
+            ok = np.where(df[i] > 0)[0]
             df = df.ix[ok]
             df = pd.DataFrame(data = np.array(df), index = range(0,len(df[0])))
     
     return df
     
-def get_median(x, y, n = 30):
+def get_median(x, y, n = 15):
     
     #bins = 10**(np.arange(min(np.log10(x))-0.2, max(np.log10(x))+0.2, 0.3))
-    bins = 10**(np.linspace(min(np.log10(x)), max(np.log10(x)), num = n, endpoint = True))
+    bins = 10**(np.linspace(min(np.log10(x)), max(np.log10(x)), num = n))
     xx = yy = yy_up = yy_low = np.array([])
 
     for i in range(0, len(bins)-1):
         ok = np.logical_and(x>=bins[i], x<bins[i+1])
-        if np.sum(ok)>25:
+        if np.sum(ok)>5:
             xx = np.append(xx, np.nanmedian(x[ok]))
             yy = np.append(yy, np.nanmedian(y[ok]))
             

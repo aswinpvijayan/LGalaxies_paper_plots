@@ -29,9 +29,9 @@ def get_vals(files, z, axs, snapnum, i, on):
     snap = snapnum[i][np.where(redshift == str(z))[0][0]]
     Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
     if on and i == 0:
-        ok = np.where(Mstar >= 10**8.9)[0]
+        ok = np.where(Mstar >= 10**9.0)[0]
     elif on and i == 1:
-        ok = np.logical_and(Mstar > 10**6.0, Mstar < 10**8.9)
+        ok = np.logical_and(Mstar > 10**7.0, Mstar < 10**9.0)
     else:
         ok = np.array([True]*len(Mstar))
         
@@ -43,7 +43,10 @@ def get_vals(files, z, axs, snapnum, i, on):
     Mdust2 = np.nansum(Mdust2, axis = 1) 
     Mdust = Mdust1 + Mdust2
     
-    return Mstar, Mdust, Type
+    Mcg = np.nansum(get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok], axis = 1)
+    ok = np.where(Mcg > 1e6)  #Only selecting galaxies with cold gas mass above this value, so the galaxies we are looking at are realistic for the dust content usually seen
+    
+    return Mstar[ok], Mdust[ok], Type[ok]
     
 
 def plot_Mstar_Mdust_user(files, z, axs, snapnum, i, on):
@@ -51,7 +54,6 @@ def plot_Mstar_Mdust_user(files, z, axs, snapnum, i, on):
     add = sims[i] 
     
     Mstar, Mdust, Type = get_vals(files, z, axs, snapnum, i, on)
-    
     x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(Mstar, Mdust, Type, z)
     
     x = np.log10(x)

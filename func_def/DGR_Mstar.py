@@ -29,9 +29,9 @@ def get_vals(files, z, axs, snapnum, i, on):
     snap = snapnum[i][np.where(redshift == str(z))[0][0]]
     Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
     if on and i == 0:
-        ok = np.where(Mstar >= 10**8.9)[0]
+        ok = np.where(Mstar >= 10**9.0)[0]
     elif on and i == 1:
-        ok = np.logical_and(Mstar > 10**7.5, Mstar < 10**8.9)
+        ok = np.logical_and(Mstar > 10**7.0, Mstar < 10**9.0)
     else:
         ok = np.array([True]*len(Mstar))
     
@@ -50,7 +50,9 @@ def get_vals(files, z, axs, snapnum, i, on):
     
     Mratio = Mdust/Mcg   #Dust-to-total cold gas mass ratio. Dimensionless.
     
-    return Mstar, Mratio, Type, Age
+    ok = np.where(Mcg > 1e6)  #Only selecting galaxies with cold gas mass above this value, so the galaxies we are looking at are realistic for the dust content usually seen
+    
+    return Mstar[ok], Mratio[ok], Type[ok], Age[ok]
     
 def plot_DGR_Mstar_user(files, z, axs, snapnum, i, on):
 

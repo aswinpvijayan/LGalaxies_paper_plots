@@ -34,9 +34,7 @@ def get_vals(files, z, axs, snapnum, i, on):
         Age = get_.get_var(files[i], 'MassWeightAge', snap)
         
         Type = get_.get_var(files[i], 'Type', snap)
-        Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)
-        Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)
-        Mcg = Mcg1 + Mcg2
+        Mcg = get_.get_var(files[i], 'ColdGasDiff_elements', snap) + get_.get_var(files[i], 'ColdGasClouds_elements', snap)
         met = Mcg[:,4]/(15.9994*Mcg[:,0])  #O/H ratio
         
         Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)
@@ -47,18 +45,18 @@ def get_vals(files, z, axs, snapnum, i, on):
         
         Mdust = np.nansum(Mdust, axis = 1)  
         
+        ok = np.logical_and(Mcg > 1e6, 12.+np.log10(met) > 6.)
+        
     else:
             i = 0
             snap = snapnum[i][np.where(redshift == str(z))[0][0]]
             Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
-            ok = np.where(Mstar >= 10**8.9)[0]
+            ok = np.where(Mstar >= 10**9.0)[0]
                 
             Mstar = Mstar[ok]
             Age = get_.get_var(files[i], 'MassWeightAge', snap)[ok]
             Type = get_.get_var(files[i], 'Type', snap)[ok]
-            Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok]
-            Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
-            Mcg = Mcg1 + Mcg2
+            Mcg = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
             
             met = Mcg[:,4]/(15.9994*Mcg[:,0])  #O/H ratio
             
@@ -74,27 +72,26 @@ def get_vals(files, z, axs, snapnum, i, on):
             i = 1
             snap = snapnum[i][np.where(redshift == str(z))[0][0]]
             tmp = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
-            ok = np.logical_and(tmp > 10**6.0, tmp < 10**8.9)
+            ok = np.logical_and(tmp > 10**7.0, tmp < 10**9.0)
             Mstar = np.append(Mstar, tmp[ok])
             
             Type = np.append(Type, get_.get_var(files[i], 'Type', snap)[ok])
             Age = np.append(Age, get_.get_var(files[i], 'MassWeightAge', snap)[ok])
-            Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok]
-            Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
-            
-            Mcg = Mcg1 + Mcg2
+            Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
             
             Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)[ok]
             Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)[ok]
             tmp = Mdust1 + Mdust2
             
-            met = np.append(met, (Mcg[:,4]-tmp[:,4])/(15.9994*Mcg[:,0]))
+            met = np.append(met, (Mcg1[:,4]-tmp[:,4])/(15.9994*Mcg[:,0]))
             
             Mdust = np.append(Mdust, np.nansum(tmp, axis = 1)) 
             
+            Mcg = np.append(np.nansum(Mcg, axis = 1), np.nansum(Mcg1, axis = 1))
+            ok = np.logical_and(Mcg > 1e6, 12.+np.log10(met) > 6.)
             add = 'MR_MRII'
             
-    return add, met, Mdust, Type, Age
+    return add, met[ok], Mdust[ok], Type[ok], Age[ok]
     
 
 def plot_O_H_vs_Dust_user(files, z, axs, snapnum, i, on):

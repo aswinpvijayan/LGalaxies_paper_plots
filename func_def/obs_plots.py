@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from uncertainties import unumpy
 
 observation_path = './Obs_data/'
 
@@ -63,27 +64,50 @@ VlahakisA_2005 = pd.read_table(observation_path+'Vlahakis2005A.txt',sep='\t',com
 VlahakisB_2005 = pd.read_table(observation_path+'Vlahakis2005B.txt',sep='\t',comment='#',index_col=False,names=['DM', 'Phi', 'Phi_up_err', 'Phi_down_err'])
 
 def DM_obs(axs, i):
-    
+    import simondata as hst
+    import dustpedia_data as dp_dat
     if i == 0:
-        axs.errorbar(RR_2015['SM'], RR_2015['DM_1'], xerr = RR_2015['SM_err'], yerr = (RR_2015['DM_1_down'], RR_2015['DM_1_up']),color='green',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='.', alpha = 0.75)
+        hubbletype = dp_dat.hubbletype
+        ETG = np.where(hubbletype < 0)
+        LTG = np.where(hubbletype >= 0)
+        axs.errorbar(unumpy.nominal_values(dp_dat.Mstar_all[ETG]), unumpy.nominal_values(dp_dat.Mdust_all[ETG]), xerr = unumpy.std_devs(dp_dat.Mstar_all[ETG]), yerr = unumpy.std_devs(dp_dat.Mdust_all[ETG]), color='pink',label=r'$\mathrm{DustPedia}$ $\mathrm{(ETG)}$',fmt='.', alpha = 0.6, elinewidth=0.05)
+        axs.errorbar(unumpy.nominal_values(dp_dat.Mstar_all[LTG]), unumpy.nominal_values(dp_dat.Mdust_all[LTG]), xerr = unumpy.std_devs(dp_dat.Mstar_all[LTG]), yerr = unumpy.std_devs(dp_dat.Mdust_all[LTG]), color='violet',label=r'$\mathrm{DustPedia}$ $\mathrm{(LTG)}$',fmt='.', alpha = 0.8,elinewidth=0.05)
+        axs.errorbar(RR_2015['SM'], RR_2015['DM_1'], xerr = RR_2015['SM_err'], yerr = (RR_2015['DM_1_down'], RR_2015['DM_1_up']),color='green',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='.', alpha = 1)
         #axs[i].errorbar(np.log10(Bourne_2012['MEDMSTAR']), np.log10(Bourne_2012['MEDMDUST']), yerr = np.log10(Bourne_2012['MEDMDUSTERR']/Bourne_2012['MEDMDUST']) , color='orange',label=r'$\mathrm{Bourne}$ $\mathrm{2012}$',fmt='.')
-        axs.errorbar(Ciesla_2014['SM'], Ciesla_2014['DM'], yerr = Ciesla_2014['DM_err'] , color='red',label=r'$\mathrm{Ciesla}$ $\mathrm{2014}$',fmt='.', alpha = 0.75)
-        axs.errorbar(Santini_2014['SM_z0'], Santini_2014['DM_z0'], yerr = (Santini_2014['DM_down_err_z0'], Santini_2014['DM_up_err_z0']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 0.75)
+        axs.errorbar(Ciesla_2014['SM'], Ciesla_2014['DM'], yerr = Ciesla_2014['DM_err'] , color='red',label=r'$\mathrm{Ciesla}$ $\mathrm{2014}$',fmt='.', alpha = 1)
+        axs.errorbar(Santini_2014['SM_z0'], Santini_2014['DM_z0'], yerr = (Santini_2014['DM_down_err_z0'], Santini_2014['DM_up_err_z0']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 1)
     if i == 1:
-        axs.errorbar(Santini_2014['SM_z1'], Santini_2014['DM_z1'], yerr = (Santini_2014['DM_down_err_z1'], Santini_2014['DM_up_err_z1']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 0.75)
+        axs.errorbar(Santini_2014['SM_z1'], Santini_2014['DM_z1'], yerr = (Santini_2014['DM_down_err_z1'], Santini_2014['DM_up_err_z1']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 1)
+        
+        #ok = np.where(hst.z == 1)
+        #axs.errorbar(hst.Mstar[ok], hst.Mdust[ok], xerr = [hst.Mstar_l[ok], hst.Mstar_u[ok]], yerr = [hst.Mdust_l[ok], hst.Mdust_u[ok]], color='indigo',label=r'$\mathrm{S.}$ $\mathrm{P.}$ $\mathrm{Driver}$ $\mathrm{2017}$',fmt='.', alpha = 0.7, elinewidth=0.05)
     if i == 2:
-        axs.errorbar(Santini_2014['SM_z2'], Santini_2014['DM_z2'], yerr = (Santini_2014['DM_down_err_z2'], Santini_2014['DM_up_err_z2']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 0.75)
-        axs.errorbar(daCunha_2015['SM_z2'], daCunha_2015['DM_z2'], xerr = (daCunha_2015['SM_down_err_z2'], daCunha_2015['SM_up_err_z2']), yerr = (daCunha_2015['DM_down_err_z2'], daCunha_2015['DM_up_err_z2']), color='green',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 0.75)
+        axs.errorbar(Santini_2014['SM_z2'], Santini_2014['DM_z2'], yerr = (Santini_2014['DM_down_err_z2'], Santini_2014['DM_up_err_z2']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 1)
+        axs.errorbar(daCunha_2015['SM_z2'], daCunha_2015['DM_z2'], xerr = (daCunha_2015['SM_down_err_z2'], daCunha_2015['SM_up_err_z2']), yerr = (daCunha_2015['DM_down_err_z2'], daCunha_2015['DM_up_err_z2']), color='crimson',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 1)
+        #ok = np.where(hst.z == 2)
+        #axs.errorbar(hst.Mstar[ok], hst.Mdust[ok], xerr = [hst.Mstar_l[ok], hst.Mstar_u[ok]], yerr = [hst.Mdust_l[ok], hst.Mdust_u[ok]], color='indigo',label=r'$\mathrm{S.}$ $\mathrm{P.}$ $\mathrm{Driver}$ $\mathrm{2017}$',fmt='.', alpha = 0.7, elinewidth=0.05)
     if i == 3:
-        axs.errorbar(daCunha_2015['SM_z3'], daCunha_2015['DM_z3'], xerr = (daCunha_2015['SM_down_err_z3'], daCunha_2015['SM_up_err_z3']), yerr = (daCunha_2015['DM_down_err_z3'], daCunha_2015['DM_up_err_z3']), color='blue',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 0.75)
+        axs.errorbar(daCunha_2015['SM_z3'], daCunha_2015['DM_z3'], xerr = (daCunha_2015['SM_down_err_z3'], daCunha_2015['SM_up_err_z3']), yerr = (daCunha_2015['DM_down_err_z3'], daCunha_2015['DM_up_err_z3']), color='crimson',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 1)
+        
+        #ok = np.where(hst.z == 3)
+        #axs.errorbar(hst.Mstar[ok], hst.Mdust[ok], xerr = [hst.Mstar_l[ok], hst.Mstar_u[ok]], yerr = [hst.Mdust_l[ok], hst.Mdust_u[ok]], color='indigo',label=r'$\mathrm{S.}$ $\mathrm{P.}$ $\mathrm{Driver}$ $\mathrm{2017}$',fmt='.', alpha = 0.7, elinewidth=0.05)
     if i == 4:
-        axs.errorbar(daCunha_2015['SM_z4'], daCunha_2015['DM_z4'], xerr = (daCunha_2015['SM_down_err_z4'], daCunha_2015['SM_up_err_z4']), yerr = (daCunha_2015['DM_down_err_z4'], daCunha_2015['DM_up_err_z4']), color='blue',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 0.75)
+        axs.errorbar(daCunha_2015['SM_z4'], daCunha_2015['DM_z4'], xerr = (daCunha_2015['SM_down_err_z4'], daCunha_2015['SM_up_err_z4']), yerr = (daCunha_2015['DM_down_err_z4'], daCunha_2015['DM_up_err_z4']), color='crimson',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 1)
+        
+        #ok = np.where(hst.z == 4)
+        #axs.errorbar(hst.Mstar[ok], hst.Mdust[ok], xerr = [hst.Mstar_l[ok], hst.Mstar_u[ok]], yerr = [hst.Mdust_l[ok], hst.Mdust_u[ok]], color='indigo',label=r'$\mathrm{S.}$ $\mathrm{P.}$ $\mathrm{Driver}$ $\mathrm{2017}$',fmt='.', alpha = 0.7, elinewidth=0.05)
     if i == 5:
-        axs.errorbar(daCunha_2015['SM_z5'], daCunha_2015['DM_z5'], xerr = (daCunha_2015['SM_down_err_z5'], daCunha_2015['SM_up_err_z5']), yerr = (daCunha_2015['DM_down_err_z5'], daCunha_2015['DM_up_err_z5']), color='blue',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 0.75)
+        axs.errorbar(daCunha_2015['SM_z5'], daCunha_2015['DM_z5'], xerr = (daCunha_2015['SM_down_err_z5'], daCunha_2015['SM_up_err_z5']), yerr = (daCunha_2015['DM_down_err_z5'], daCunha_2015['DM_up_err_z5']), color='crimson',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 1)
+        
+        #ok = np.where(hst.z == 5)
+        #axs.errorbar(hst.Mstar[ok], hst.Mdust[ok], xerr = [hst.Mstar_l[ok], hst.Mstar_u[ok]], yerr = [hst.Mdust_l[ok], hst.Mdust_u[ok]], color='indigo',label=r'$\mathrm{S.}$ $\mathrm{P.}$ $\mathrm{Driver}$ $\mathrm{2017}$',fmt='.', alpha = 0.7, elinewidth=0.05)
     if i == 6:
-        axs.errorbar(daCunha_2015['SM_z6'], daCunha_2015['DM_z6'], xerr = (daCunha_2015['SM_down_err_z6'], daCunha_2015['SM_up_err_z6']), yerr = (daCunha_2015['DM_down_err_z6'], daCunha_2015['DM_up_err_z6']), color='blue',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 0.75)
-    if( (i == 6) or (i == 7) ):
-        axs.errorbar(Mancini_2015['SM'], Mancini_2015['DM'], yerr = Mancini_2015['DM_err'], xerr = Mancini_2015['SM_err'], uplims = Mancini_2015['uplims'], color='green',label=r'$\mathrm{Mancini}$ $\mathrm{2015}$',fmt='.', alpha = 0.75)
+        axs.errorbar(daCunha_2015['SM_z6'], daCunha_2015['DM_z6'], xerr = (daCunha_2015['SM_down_err_z6'], daCunha_2015['SM_up_err_z6']), yerr = (daCunha_2015['DM_down_err_z6'], daCunha_2015['DM_up_err_z6']), color='crimson',label=r'$\mathrm{daCunha}$ $\mathrm{2015}$',fmt='.', alpha = 1)
+        
+        #ok = np.where(hst.z == 6)
+        #axs.errorbar(hst.Mstar[ok], hst.Mdust[ok], xerr = [hst.Mstar_l[ok], hst.Mstar_u[ok]], yerr = [hst.Mdust_l[ok], hst.Mdust_u[ok]], color='indigo',label=r'$\mathrm{S.}$ $\mathrm{P.}$ $\mathrm{Driver}$ $\mathrm{2017}$',fmt='.', alpha = 0.7, elinewidth=0.05)
+    if i == 7:
+        axs.errorbar(Mancini_2015['SM'], Mancini_2015['DM'], yerr = Mancini_2015['DM_err'], xerr = Mancini_2015['SM_err'], uplims = Mancini_2015['uplims'], color='brown',label=r'$\mathrm{Mancini}$ $\mathrm{2015}$',fmt='.', alpha = 1, marker = ".", markersize = 6)
         
         
 def D_Met_obs(axs, i):
@@ -110,21 +134,78 @@ def DMF(axs, i):
     if(i == 0):
         axs.errorbar(VlahakisA_2005['DM'], np.log10(VlahakisA_2005['Phi']), yerr=[np.log10((VlahakisA_2005['Phi']+VlahakisA_2005['Phi_down_err'])/VlahakisA_2005['Phi']),np.log10((VlahakisA_2005['Phi']+VlahakisA_2005['Phi_up_err'])/VlahakisA_2005['Phi'])] ,color='g',label=r'$\mathrm{VlahakisA}$ $\mathrm{2005}$',fmt='.')
         axs.errorbar(VlahakisB_2005['DM'] ,np.log10(VlahakisB_2005['Phi']) ,yerr=[np.log10((VlahakisB_2005['Phi']+VlahakisB_2005['Phi_down_err'])/VlahakisB_2005['Phi']),np.log10((VlahakisB_2005['Phi']+VlahakisB_2005['Phi_up_err'])/VlahakisB_2005['Phi'])] ,color='red',label=r'$\mathrm{VlahakisB}$ $\mathrm{2005}$',fmt='.')
-        axs.errorbar(Clemens_2013['DM'], Clemens_2013['Phi'], xerr = np.ones(len(Clemens_2013['DM']))*0.3, yerr = [Clemens_2013['Phi_down_err'],Clemens_2013['Phi_up_err']],color='b',label=r'$\mathrm{Clemens}$ $\mathrm{2013}$',fmt='.') 
-        
+        axs.errorbar(Clemens_2013['DM'], Clemens_2013['Phi'], xerr = np.ones(len(Clemens_2013['DM']))*0.3, yerr = [Clemens_2013['Phi_down_err'],Clemens_2013['Phi_up_err']],color='b',label=r'$\mathrm{Clemens}$ $\mathrm{2013}$',fmt='.')
+    if (i == 1):
+        data = np.genfromtxt('./Obs_data/Eales2009.txt', skip_header=2, delimiter = ',')
+        x, y, y_up, y_low = np.log10(data[:,0]), np.log10(data[:,1]), np.log10(data[:,2])-np.log10(data[:,1]), np.log10(data[:,1])-np.log10(data[:,3])
+        axs.errorbar(x, y, yerr=[y_low, y_up] ,color='g',label=r'$\mathrm{Eales}$ $\mathrm{2009}$',fmt='.')
+    
 def DTM_oxy(axs, i):
-
+    
+    import Wiseman_data_OH
+    Wiseman_OH = Wiseman_data_OH.OH_abund
+    Wiseman_z = Wiseman_data_OH.z
+    Wiseman_DTM = Wiseman_data_OH.DTM_all
+    
+    import De_Cia_data 
+    Cia_OH = De_Cia_data.OH_abund
+    Cia_z = De_Cia_data.z
+    Cia_DTM = De_Cia_data.DTM_all
+    Cia_xuplims = De_Cia_data.xuplims
+    Cia_yuplims = De_Cia_data.yuplims
+    
     if(i == 0):
-        axs.errorbar(RR_2015['Oxygen'], RR_2015['DTM_1B']+np.log10(0.44), yerr=(0.75*RR_2015['DTM_1B']), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 
+        x = RR_2015['Oxygen']
+        y = RR_2015['DTM_1B']
+        yerror = np.abs((0.75*RR_2015['DTM_1B']))
+        yall = unumpy.uarray(y, yerror)
+        ynew = yall - unumpy.log10(1. + 10**yall)
+        axs.errorbar(x, unumpy.nominal_values(ynew), yerr=unumpy.std_devs(ynew), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 
     if(i == 2):
-        axs.errorbar(Wiseman_2017['Metals_z2'],np.log10(Wiseman_2017['DTM_z2']*0.464), xerr =  np.log10(Wiseman_2017['Metals_err_z2']), yerr = np.log10(Wiseman_2017['DTM_err_z2']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        ok = np.where(Wiseman_z == 2)
+        x = Wiseman_OH[ok]
+        y = Wiseman_DTM[ok]
+        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        
+        ok = np.where(Cia_z == 2)
+        x = Cia_OH[ok]
+        y = Cia_DTM[ok]
+        xuplims = Cia_xuplims[ok]
+        yuplims = Cia_yuplims[ok]
+        up = np.logical_and(xuplims == 0, yuplims == 0)
+        axs.errorbar(unumpy.nominal_values(x[up]), unumpy.nominal_values(y[up]), xerr =  unumpy.std_devs(x[up]), yerr = unumpy.std_devs(y[up]), color='b',label=r'$\mathrm{De}$ $\mathrm{Cia}$ $\mathrm{2016}$',fmt='o')
+        axs.errorbar(unumpy.nominal_values(x[~up]), unumpy.nominal_values(y[~up]), xerr =  unumpy.std_devs(x[~up]), yerr = unumpy.std_devs(y[~up]), xuplims = xuplims[~up], uplims = yuplims[~up], color='b', markerfacecolor='None', markeredgecolor = 'b', fmt='o', alpha = 0.8, elinewidth=0.5)
     if(i == 3):
-        axs.errorbar(Wiseman_2017['Metals_z3'],np.log10(Wiseman_2017['DTM_z3']*0.464),  xerr =  np.log10(Wiseman_2017['Metals_err_z3']), yerr = np.log10(Wiseman_2017['DTM_err_z3']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        ok = np.where(Wiseman_z == 3)
+        x = Wiseman_OH[ok]
+        y = Wiseman_DTM[ok]
+        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        
+        ok = np.where(Cia_z == 3)
+        x = Cia_OH[ok]
+        y = Cia_DTM[ok]
+        xuplims = Cia_xuplims[ok]
+        yuplims = Cia_yuplims[ok]
+        up = np.logical_and(xuplims == 0, yuplims == 0)
+        axs.errorbar(unumpy.nominal_values(x[up]), unumpy.nominal_values(y[up]), xerr =  unumpy.std_devs(x[up]), yerr = unumpy.std_devs(y[up]), color='b',label=r'$\mathrm{De}$ $\mathrm{Cia}$ $\mathrm{2016}$',fmt='o')
+        axs.errorbar(unumpy.nominal_values(x[~up]), unumpy.nominal_values(y[~up]), xerr =  unumpy.std_devs(x[~up]), yerr = unumpy.std_devs(y[~up]), xuplims = xuplims[~up], uplims = yuplims[~up], color='b', markerfacecolor='None', markeredgecolor = 'b', fmt='o', alpha = 0.8, elinewidth=0.5)
     if(i == 4):
-        axs.errorbar(Wiseman_2017['Metals_z4'],np.log10(Wiseman_2017['DTM_z4']*0.464),  xerr =  np.log10(Wiseman_2017['Metals_err_z4']), yerr = np.log10(Wiseman_2017['DTM_err_z4']), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        ok = np.where(Wiseman_z == 4)
+        x = Wiseman_OH[ok]
+        y = Wiseman_DTM[ok]
+        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+    if(i == 5):
+        ok = np.where(Wiseman_z == 5)
+        x = Wiseman_OH[ok]
+        y = Wiseman_DTM[ok]
+        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
 		
 def DTM_stell(axs, i):
 
     if(i == 0):
-        axs.errorbar(RR_2015['SM'], RR_2015['DTM_1B']+np.log10(0.44), yerr=(0.75*RR_2015['DTM_1B']), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 
-		
+        x = RR_2015['SM']
+        y = RR_2015['DTM_1B']
+        yerror = np.abs((0.75*RR_2015['DTM_1B']))
+        yall = unumpy.uarray(y, yerror)
+        ynew = yall - unumpy.log10(1. + 10**yall)
+        axs.errorbar(x, unumpy.nominal_values(ynew), yerr=unumpy.std_devs(ynew), color='g',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='o') 

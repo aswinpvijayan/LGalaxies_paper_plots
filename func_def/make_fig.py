@@ -26,10 +26,10 @@ def fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den):
     del x, y, xx, yy, yy_up, yy_low
     
     for label in (axs.get_xticklabels() + axs.get_yticklabels()):
-        label.set_fontsize(18)
+        label.set_fontsize(16)
     
     axs.grid(True)
-    lgd = axs.legend(fontsize = 18, markerscale=2, loc = 4, numpoints=1, handletextpad=0.005)
+    lgd = axs.legend(fontsize = 15, loc = 0, markerscale=2, numpoints=1, handletextpad=0.005)
     if np.isscalar(lgd):
         lgd.set_zorder(100)
         
@@ -53,15 +53,15 @@ def fig_median(axs, z, xx, yy, yy_up, yy_low, i):
         pass
     
     for label in (axs.get_xticklabels() + axs.get_yticklabels()):
-        label.set_fontsize(18)
+        label.set_fontsize(16)
     
     axs.grid(True)
     
     
-def fig_age(axs, z, x, y, xx, yy, yy_up, yy_low, den):
+def fig_age(axs, z, x, y, xx, yy, yy_up, yy_low, den, bins = 'log'):
     
     gridsize = np.array([(int(max(x)-min(x))/0.03), int((max(y)-min(y))/0.03)]).astype(int)
-    p = axs.hexbin(x, y, gridsize=gridsize, bins = 'log', alpha = 0.7, C = den, cmap = plt.cm.get_cmap('jet'), mincnt = 1)
+    p = axs.hexbin(x, y, gridsize=gridsize, bins = bins, alpha = 0.7, C = den, cmap = plt.cm.get_cmap('jet'), mincnt = 1)
     
     axs.plot(xx, yy, lw = 1, color = 'brown')
     axs.plot(xx, yy_up, lw = 1, ls = 'dashed', color = 'brown')
@@ -70,10 +70,10 @@ def fig_age(axs, z, x, y, xx, yy, yy_up, yy_low, den):
     del x, y, xx, yy, yy_up, yy_low
     
     for label in (axs.get_xticklabels() + axs.get_yticklabels()):
-        label.set_fontsize(20)
+        label.set_fontsize(16)
     
     axs.grid(True)
-    lgd = axs.legend(fontsize = 20, markerscale=2, loc = 4, numpoints=1, handletextpad=0.005)
+    lgd = axs.legend(fontsize = 15, markerscale=2, loc = 4, numpoints=1, handletextpad=0.005)
     if np.isscalar(lgd):
         lgd.set_zorder(100)
 

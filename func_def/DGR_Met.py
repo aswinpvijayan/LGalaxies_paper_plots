@@ -29,13 +29,11 @@ def get_vals(files, z, axs, snapnum, i, on):
         i = 0
         snap = snapnum[i][np.where(redshift == str(z))[0][0]]
         Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
-        ok = np.where(Mstar >= 10**8.85)[0]
+        ok = np.where(Mstar >= 10**9)[0]
         Mstar = Mstar[ok]
         Type = get_.get_var(files[i], 'Type', snap)[ok]
         Age = get_.get_var(files[i], 'MassWeightAge', snap)[ok]
-        Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok]
-        Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
-        Mcg = Mcg1 + Mcg2
+        Mcg = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
 
         met = (Mcg[:,4])/(15.9994*(Mcg[:,0]))  #O/H ratio
 
@@ -52,26 +50,27 @@ def get_vals(files, z, axs, snapnum, i, on):
         i = 1
         snap = snapnum[i][np.where(redshift == str(z))[0][0]]
         tmp = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
-        ok = np.logical_and(tmp > 10**7.5, tmp < 10**8.9)
+        ok = np.logical_and(tmp > 10**7.5, tmp < 10**8.98)
         Mstar = np.append(Mstar, tmp[ok])
         Type = np.append(Type, get_.get_var(files[i], 'Type', snap)[ok])
         Age = np.append(Age, get_.get_var(files[i], 'MassWeightAge', snap)[ok])
-        Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok]
-        Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
-        Mcg = Mcg1 + Mcg2
+        tmp1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
 
         Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)[ok]
         Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)[ok]
         tmp2 = Mdust1 + Mdust2
 
-        met = np.append(met, (Mcg[:,4]-tmp2[:,4])/(15.9994*(Mcg[:,0])))
+        met = np.append(met, (tmp1[:,4]-tmp2[:,4])/(15.9994*(tmp1[:,0])))
 
-        tmp1 = np.nansum(Mcg1 + Mcg2, axis = 1)
+        tmp1 = np.nansum(tmp1, axis = 1)
         tmp2 = np.nansum(Mdust1 + Mdust2, axis = 1)
 
         Mdust = np.append(Mdust, tmp2)
 
         Mratio = np.append(Mratio, tmp2/tmp1)
+        
+        Mcg = np.append(Mcg, tmp1)
+        ok = np.logical_and(Mcg > 1e6, 12.+np.log10(met) > 6.)  #Only selecting galaxies with cold gas mass above this value, so the galaxies we are looking at are realistic for the dust content usually seen
 
         add = 'MR_MRII'
     else:
@@ -80,10 +79,8 @@ def get_vals(files, z, axs, snapnum, i, on):
         Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
         
         Type = get_.get_var(files[i], 'Type', snap)
-        Age = get_.get_var(files[i], 'MassWeightAge', snap)[ok]
-        Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)
-        Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)
-        Mcg = Mcg1 + Mcg2
+        Age = get_.get_var(files[i], 'MassWeightAge', snap)
+        Mcg = get_.get_var(files[i], 'ColdGas_elements', snap)
 
         met = (Mcg[:,4])/(15.9994*(Mcg[:,0]))  #O/H ratio
 
@@ -96,8 +93,10 @@ def get_vals(files, z, axs, snapnum, i, on):
         Mdust = Mdust1 + Mdust2
 
         Mratio = Mdust/Mcg   #Dust-to-total cold gas mass ratio. Dimensionless.
-
-    return add, met, Mratio, Type, Age
+        
+        ok = np.logical_and(Mcg > 1e6, 12.+np.log10(met) > 6.)  #Only selecting galaxies with cold gas mass above this value, so the galaxies we are looking at are realistic for the dust content usually seen
+        
+    return add, met[ok], Mratio[ok], Type[ok], Age[ok]
 
 
 def plot_O_H_vs_DGR_user(files, z, axs, snapnum, i, on):
@@ -115,9 +114,9 @@ def plot_O_H_vs_DGR_user(files, z, axs, snapnum, i, on):
 
     make_fig.fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den)
 
-    xlim = [7.5,10.5]
+    xlim = [6.5,10.5]
     ylim = [-7,-0.1]
-    xticks = [8, 9, 10]
+    xticks = [7, 8, 9, 10]
 
     axs.set_xlim(xlim)
     axs.set_ylim(ylim)

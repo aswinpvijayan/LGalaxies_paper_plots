@@ -30,26 +30,32 @@ def get_vals(files, z, axs, snapnum, i, on):
     snap = snapnum[i][np.where(redshift == str(z))[0][0]]
     Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
     if on and i == 0:
-        ok = np.where(Mstar >= 10**8.9)[0]
+        ok = np.where(Mstar >= 10**9.0)[0]
     elif on and i == 1:
-        ok = np.logical_and(Mstar > 10**7.5, Mstar < 10**8.9)
+        ok = np.logical_and(Mstar > 10**7.0, Mstar < 10**9.0)
     else:
         ok = np.array([True]*len(Mstar))
 
     Mstar = Mstar[ok]
     Type = get_.get_var(files[i], 'Type', snap)[ok]
     Age = get_.get_var(files[i], 'MassWeightAge', snap)[ok]
+    Mcg = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
+    Mmet = np.nansum(Mcg[:,2:], axis = 1)
+    Mcg = np.nansum(Mcg, axis = 1)
+    Z = Mmet/Mcg
     tacc = get_.get_var(files[i], 't_acc', snap)[ok]
-
-    return Mstar, tacc, Type, Age
+    
+    ok = np.where(Mcg > 1e6)  #Only selecting galaxies with cold gas mass above this value, so the galaxies we are looking at are realistic for the dust content usually seen
+    
+    return Mstar[ok], tacc[ok], Type[ok], Age[ok], Z[ok]
 
 
 def plot_tacc_Mstar_user(files, z, axs, snapnum, i, on):
 
     add = sims[i]
 
-    Mstar, tacc, Type, Age = get_vals(files, z, axs, snapnum, i, on)
-    x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(Mstar, tacc, Type, z)
+    Mstar, tacc, Type, Age, Z = get_vals(files, z, axs, snapnum, i, on)
+    x, y, xx, yy, yy_up, yy_low, den = create_out.out_age(Mstar, tacc, Type, Z, z)
 
     x = np.log10(x)
     y = np.log10(y)
@@ -57,27 +63,29 @@ def plot_tacc_Mstar_user(files, z, axs, snapnum, i, on):
     yy = np.log10(yy)
     yy_up = np.log10(yy_up)
     yy_low = np.log10(yy_low)
-
-    make_fig.fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den)
-
+    den = np.log10(den)
+    
+    #p = make_fig.fig_age(axs, z, x, y, xx, yy, yy_up, yy_low, den, bins = None) #Colour by metallicity
+    p = make_fig.fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den)
+    
     xlim = [7.5,11.7]
-    ylim = [5,10.5]
+    ylim = [5,11.5]
     xticks = [8, 9, 10, 11]
-    yticks = [5, 6, 7, 8, 9, 10]
+    yticks = [5, 6, 7, 8, 9, 10, 11]
 
     axs.set_xlim(xlim)
     axs.set_ylim(ylim)
     axs.set_xticks(xticks)
     axs.set_yticks(yticks)
 
-    return add
+    return add, p, den
 
 
 def plot_tacc_Mstar_median(files, z, axs, snapnum, i, on):
 
     add = sims[i]
 
-    Mstar, tacc, Type, Age = get_vals(files, z, axs, snapnum, i, on)
+    Mstar, tacc, Type, Age, Z = get_vals(files, z, axs, snapnum, i, on)
     xx, yy, yy_up, yy_low = create_out.out_median(Mstar, tacc, Type, z)
 
     xx = np.log10(xx)
@@ -104,7 +112,7 @@ def plot_tacc_Mstar_age(files, z, axs, snapnum, i, on):
 
     add = sims[i]
 
-    Mstar, tacc, Type, Age = get_vals(files, z, axs, snapnum, i, on)
+    Mstar, tacc, Type, Age, Z = get_vals(files, z, axs, snapnum, i, on)
     x, y, xx, yy, yy_up, yy_low, den = create_out.out_age(Mstar, tacc, Type, Age, z)
 
     x = np.log10(x)
