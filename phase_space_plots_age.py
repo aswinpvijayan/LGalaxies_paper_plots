@@ -30,7 +30,7 @@ from mpl_toolkits.axes_grid.inset_locator import inset_axes
     1. Dust mass vs Metallciity plot for z = 0-9
     2. Dust-to-gas ratio (DGR) vs stellar mass for z = 0-9
     3. DGR vs Metallicity for z = 0-9
-    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9  (Figure 4 in paper)
+    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9  (Figure 5 in paper)
     5. DTM ratio vs Metallicity for z = 0-9
     6. Accretion timescale vs stellar mass plot for z = 0-9
     7. Accretion timescale vs metallicity plot for z = 0-9

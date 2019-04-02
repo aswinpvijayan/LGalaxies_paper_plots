@@ -111,7 +111,7 @@ def plot_Mstar_Mdust(fil, z, axs, snapnum, i, on, k, label):
 def plot_figure(axs, z, xx, yy, yy_up, yy_low, k, label):
     
     if label != None:
-        axs.plot(xx, yy, lw = 1, color = colors[k], label = r'$\tau_{\mathrm{acc}}=$'+label+r'$\mathrm{yrs}$')
+        axs.plot(xx, yy, lw = 1, color = colors[k], label = r'$\tau_{\mathrm{acc,0}}=$'+label+r'$\mathrm{yr}$')
     else:
         axs.plot(xx, yy, lw = 1, color = colors[k])
     axs.plot(xx, yy_up, lw = 1, ls = 'dashed', color = colors[k])
@@ -138,8 +138,8 @@ titles = np.array(['5e3', '1e4', '5e4', '1e5', '1e6'])
 fig, axs = plt.subplots(nrows = 1, ncols = 4, figsize=(20, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
 axs = axs.ravel()
 
-xlab = r'$\mathrm{log}_{10}(M_{*}/(M_{\odot}))$'
-ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/(M_{\odot}))$'
+xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
+ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
 savename = 'Dust_Stellar_diff_taccs'
 
 from obs_plots import DM_obs 

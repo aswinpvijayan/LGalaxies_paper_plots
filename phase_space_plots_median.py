@@ -25,10 +25,10 @@ from astropy.cosmology import Planck13
         #####################################################################################
 """
     User inputs for producing the preferred plots:
-    0. Dust mass vs stellar mass plot    (Figure 13b in paper)
+    0. Dust mass vs stellar mass plot    
     2. Dust-to-gas ratio (DGR) vs stellar mass 
     3. DGR vs Metallicity
-    4. Dust-to-metal (DTM) ratio vs Stellar mass   (Figure 13a in paper)
+    4. Dust-to-metal (DTM) ratio vs Stellar mass   
     5. DTM ratio vs Metallicity
     6. Accretion timescale vs stellar mass plot
     7. Accretion timescale vs metallicity plot

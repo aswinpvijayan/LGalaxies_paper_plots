@@ -10,7 +10,8 @@ import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+sns.set_context("paper")
+sns.set_style(style='white') 
 # t_e
 t_e_array = np.array([0.01, 1.0, 100])
 
@@ -24,7 +25,7 @@ f0_array = np.array([0.05,0.05])
 t=np.logspace(-3,3,4000)
 
 # Plotting
-sns.set_context('paper')
+#sns.set_context('paper')
 
 
 # Define the derivative function
@@ -54,14 +55,14 @@ for i in range(0, len(mu_array)):
             axs[i, j].plot([t_e,t_e],[0.,1.],':',color='red')
             axs[i, j].plot([t_e*(1.-mu)/mu,t_e*(1.-mu)/mu],[0.,1.],'-.',color='orange')
             axs[i, j].axhline(y = 0.7, ls = '-.',label = r'$\mathrm{f_{C,max}}$',color='blue')
-            axs[i, j].legend(frameon=False, fontsize = 19, loc = 0)
+            axs[i, j].legend(frameon=True, fontsize = 19, loc = 0, framealpha = 0.7)
         if i == 0 and j == 1:
             axs[i, j].semilogx(t,fc,color='blue')
             axs[i, j].semilogx(t,fi,color='green')
             axs[i, j].plot([t_e,t_e],[0.,1.],':',color='red',label=r'$\frac{\tau_{\mathrm{exch}}}{\mathrm{t_{acc}}}$')
             axs[i, j].plot([t_e*(1.-mu)/mu,t_e*(1.-mu)/mu],[0.,1.],'-.',color='orange',label=r'$\frac{\tau_{\mathrm{exch}}^\prime}{\mathrm{t_{acc}}}$')
             axs[i, j].axhline(y = 0.7, ls = '-.',color='blue')
-            axs[i, j].legend(frameon=False, fontsize = 25, loc = 0)
+            axs[i, j].legend(frameon=True, fontsize = 25, loc = 0, framealpha = 0.7)
         else:
             axs[i, j].semilogx(t,fc,color='blue')
             axs[i, j].semilogx(t,fi,color='green')

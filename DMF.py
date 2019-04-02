@@ -20,7 +20,7 @@ sns.set_style(style='white')
         ###################################################################################
 """        
     inp = 0 to plot just MR, 1 for MRII and any higher number for plotting both MR and MRII
-    (Figure 12 in paper)
+    (Figure 13 in paper)
 """        
 
 inp = int(sys.argv[1])    

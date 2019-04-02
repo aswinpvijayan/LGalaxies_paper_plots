@@ -26,12 +26,12 @@ from mpl_toolkits.axes_grid.inset_locator import inset_axes
         #####################################################################################
 """
     User inputs for producing the preferred plots:
-    0. Dust mass vs stellar mass plot for z = 0-9   (Figure 11 in paper)
+    0. Dust mass vs stellar mass plot for z = 0-9   (Figure 12 in paper)
     1. Dust mass vs Metallciity plot for z = 0-9
-    2. Dust-to-gas ratio (DGR) vs stellar mass for z = 0  (Figure 9 in paper)
-    3. DGR vs Metallicity for z = 0   (Figure 10 in paper)
-    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9    (Figure 2 in paper)
-    5. DTM ratio vs Metallicity for z = 0-9 (Figure 5 in paper)
+    2. Dust-to-gas ratio (DGR) vs stellar mass for z = 0  (Figure 10 in paper)
+    3. DGR vs Metallicity for z = 0   (Figure 11 in paper)
+    4. Dust-to-metal (DTM) ratio vs Stellar mass for z = 0-9    (Figure 3 in paper)
+    5. DTM ratio vs Metallicity for z = 0-9 (Figure 6 in paper)
     6. Accretion timescale vs stellar mass plot for z = 0-9 (Figure A1 in paper)
     7. Accretion timescale vs metallicity plot for z = 0-9
 
@@ -69,22 +69,22 @@ if inp == 0:
     xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
     ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
     savename = 'Dust_Stellar_'
-    #fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+    fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
     from obs_plots import DM_obs
     from Mstar_Mdust import plot_Mstar_Mdust_user
 
     for z in range(0, 9):
-        DM_obs(axs[z], z)   #Plotting the observational data points
-        axs[z].text(8.25, 2.5, r'$z = {}$'.format(z), fontsize = 18)
+        DM_obs(axs, z)   #Plotting the observational data points
+        axs.text(8.25, 2.5, r'$z = {}$'.format(z), fontsize = 18)
         
         if i <= 1:
-            add = plot_Mstar_Mdust_user(files, z, axs[z], snaps, i, False)
+            add = plot_Mstar_Mdust_user(files, z, axs, snaps, i, False)
         else:
-            add1 = plot_Mstar_Mdust_user(files, z, axs[z], snaps, 0, True)
-            add2 = plot_Mstar_Mdust_user(files, z, axs[z], snaps, 1, True)
+            add1 = plot_Mstar_Mdust_user(files, z, axs, snaps, 0, True)
+            add2 = plot_Mstar_Mdust_user(files, z, axs, snaps, 1, True)
             add = add1+'_'+add2
         
-        axs[z].legend(loc = 2, fontsize = 15)
+        axs.legend(loc = 2, fontsize = 15)
         """
         add = 'obs'
         xlim = [7.5,11.9]
@@ -173,7 +173,7 @@ elif inp == 4:
 
     for z in range(0, 9):
         DTM_stell(axs[z], z)
-        axs[z].text(11, -1.5, r'$z = {}$'.format(z), fontsize = 18)
+        
         if i <= 1:
             add = plot_Mstar_DTM_user(files, z, axs[z], snaps, i, False)
         else:
@@ -189,8 +189,10 @@ elif inp == 4:
         yy_interp = np.interp(xx_interp, xx, yy)
         axs[z].plot(xx_interp, yy_interp, ls = 'dotted', lw = 4, color = 'blue')
         
-        #Here 0.6344835603686649 is the estimated maximum value of Mdust/Mmet. 
-        axs[z].axhline(np.log10(0.6344835603686649), ls = 'dotted', lw = 4, color = 'red')
+        axs[z].text(10.5, -1.5, r'$z = {}$'.format(z), fontsize = 18)
+        
+        #Here 0.401794648 is the estimated maximum value of Mdust/Mmet. 
+        #axs[z].axhline(np.log10(0.401794648), ls = 'dotted', lw = 4, color = 'red')
                 
 
 elif inp == 5:
@@ -204,7 +206,7 @@ elif inp == 5:
 
     for z in range(0, 9):
         DTM_oxy(axs[z], z)
-        axs[z].text(9.5, -1, r'$z = {}$'.format(z), fontsize = 18)
+        axs[z].text(6.7, -2.1, r'$z = {}$'.format(z), fontsize = 18)
         if i <= 1:
             add = plot_O_H_vs_DTM_user(files, z, axs[z], snaps, i, False)
         else:
@@ -223,7 +225,7 @@ elif inp == 6:
         
         axs[z].text(8.2, 5.7, r'$z = {}$'.format(z), fontsize = 18)
         uni_age = Planck13.age(z).value*1e9
-        axs[j].axhline(y = np.log10(uni_age), ls = '-.',label = r'$\mathrm{Universe}$ $\mathrm{age(z)}$')
+        axs[j].axhline(y = np.log10(uni_age), ls = '-.', lw = 3, label = r'$\mathrm{Universe}$ $\mathrm{age(z)}$')
         if i <= 1:
             add, p, den = plot_tacc_Mstar_user(files, z, axs[j], snaps, i, False)
         else:
@@ -254,7 +256,7 @@ elif inp == 7:
         
         axs[z].text(8.2, 5.7, r'$z = {}$'.format(z), fontsize = 18)
         uni_age = Planck13.age(z).value*1e9
-        axs[j].axhline(y = np.log10(uni_age), ls = '-.',label = r'$\mathrm{Universe}$ $\mathrm{age(z)}$')
+        axs[j].axhline(y = np.log10(uni_age), ls = '-.', lw = 3, label = r'$\mathrm{Universe}$ $\mathrm{age(z)}$')
         if i <= 1:
             add = plot_tacc_Met_user(files, z, axs[z], snaps, i, False)
         else:

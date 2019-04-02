@@ -14,6 +14,10 @@ import seaborn as sns
 sns.set_context("paper")
 sns.set_style(style='white')
 
+"""
+    Figure 4 in paper
+"""
+
 h = 0.673        
 redshift = np.array(['0',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9', '10', '11', '12', '13', '14'])
 snapnumMR =  np.array(['58', '38', '30', '25', '22', '19', '17', '15', '13', '12', '11', '10', '9', '8', '7'])
@@ -85,25 +89,23 @@ for z in range(0, 9):
     axs[z].set_xlim([-2.6,0.1])
     axs[z].set_xticks((-2, -1, 0))
     if z in range(3,9):
-        axs[z].set_ylim(np.log10([0.05, 4]))
+        axs[z].set_ylim(np.log10([0.05, 5]))
         axs[z].set_yticks(np.log10([0.1, 0.3, 0.7, 1.5, 3]))
         axs[z].set_yticklabels([])
     else:
-        axs[z].set_ylim(np.log10([0.1, 8]))
-        axs[z].set_yticks(np.log10([0.5, 1, 2, 3, 5, 7]))
+        axs[z].set_ylim(np.log10([0.1, 10]))
+        axs[z].set_yticks(np.log10([0.5, 1, 3, 6]))
         axs[z].set_yticklabels([])
-    if z in [0]:
-        axs[z].set_yticks(np.log10([0.5, 1, 3, 5, 7]))
-        axs[z].set_yticklabels([0.5, 1, 2, 3, 5, 7])
+        
     if z in [3, 6]:
-        axs[z].set_yticks(np.log10([0.1, 0.3, 0.7, 1.5, 3]))
         axs[z].set_yticklabels([0.1, 0.3, 0.7, 1.5, 3])
     
     axs[z].grid()
     axs[z].text(-2.5, np.log10(2), r'$z = {}$'.format(z), fontsize = 18)
     for label in (axs[z].get_xticklabels() + axs[z].get_yticklabels()):
         label.set_fontsize(13)
-    
+
+axs[0].set_yticklabels([0.5, 1, 3, 6])    
     
 fig.subplots_adjust(wspace=0, hspace=0) 
 axs[3].set_ylabel('fraction/dex', fontsize = 16)
