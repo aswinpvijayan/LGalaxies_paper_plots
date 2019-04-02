@@ -75,7 +75,7 @@ def DM_obs(axs, i):
         axs.errorbar(RR_2015['SM'], RR_2015['DM_1'], xerr = RR_2015['SM_err'], yerr = (RR_2015['DM_1_down'], RR_2015['DM_1_up']),color='green',label=r'$\mathrm{Remy-Ruyer}$ $\mathrm{2015}$',fmt='.', alpha = 1)
         #axs[i].errorbar(np.log10(Bourne_2012['MEDMSTAR']), np.log10(Bourne_2012['MEDMDUST']), yerr = np.log10(Bourne_2012['MEDMDUSTERR']/Bourne_2012['MEDMDUST']) , color='orange',label=r'$\mathrm{Bourne}$ $\mathrm{2012}$',fmt='.')
         axs.errorbar(Ciesla_2014['SM'], Ciesla_2014['DM'], yerr = Ciesla_2014['DM_err'] , color='red',label=r'$\mathrm{Ciesla}$ $\mathrm{2014}$',fmt='.', alpha = 1)
-        axs.errorbar(Santini_2014['SM_z0'], Santini_2014['DM_z0'], yerr = (Santini_2014['DM_down_err_z0'], Santini_2014['DM_up_err_z0']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 1)
+        axs.errorbar(Santini_2014['SM_z0'], Santini_2014['DM_z0'], yerr = (Santini_2014['DM_down_err_z0'], Santini_2014['DM_up_err_z0']),label=r'$\mathrm{Santini}$ $\mathrm{2014}$',color='blue',fmt='.', alpha = 1)
     if i == 1:
         axs.errorbar(Santini_2014['SM_z1'], Santini_2014['DM_z1'], yerr = (Santini_2014['DM_down_err_z1'], Santini_2014['DM_up_err_z1']), color='blue',label=r'$\mathrm{Santini}$ $\mathrm{2014}$',fmt='.', alpha = 1)
         
@@ -179,7 +179,7 @@ def DTM_oxy(axs, i):
         ok = np.where(Wiseman_z == 3)
         x = Wiseman_OH[ok]
         y = Wiseman_DTM[ok]
-        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$', color='r',fmt='o')
         
         ok = np.where(Cia_z == 3)
         x = Cia_OH[ok]
@@ -193,12 +193,12 @@ def DTM_oxy(axs, i):
         ok = np.where(Wiseman_z == 4)
         x = Wiseman_OH[ok]
         y = Wiseman_DTM[ok]
-        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$', color='r',fmt='o')
     if(i == 5):
         ok = np.where(Wiseman_z == 5)
         x = Wiseman_OH[ok]
         y = Wiseman_DTM[ok]
-        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), color='r',label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$',fmt='o')
+        axs.errorbar(unumpy.nominal_values(x), unumpy.nominal_values(y), xerr =  unumpy.std_devs(x), yerr = unumpy.std_devs(y), label=r'$\mathrm{Wiseman}$ $\mathrm{2017}$', color='r',fmt='o')
 		
 def DTM_stell(axs, i):
 

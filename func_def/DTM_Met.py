@@ -125,9 +125,9 @@ def plot_O_H_vs_DTM_user(files, z, axs, snapnum, i, on):
 
     make_fig.fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den)
 
-    xlim = [6.5,10.5]
-    ylim = [-2.9,0.6]
-    xticks = [7, 8, 9, 10, 11]
+    xlim = [6.5,9.8]
+    ylim = [-2.6,0.15]
+    xticks = [7, 8, 9]
 
     axs.set_xlim(xlim)
     axs.set_ylim(ylim)

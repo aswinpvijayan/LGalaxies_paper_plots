@@ -14,10 +14,10 @@ def fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den):
     
     gridsize = np.array([(int(max(x)-min(x))/0.1), int((max(y)-min(y))/0.1)]).astype(int)
     hb = axs.hexbin(x, y, gridsize=gridsize, bins = 'log', cmap = plt.cm.get_cmap('gist_yarg'), mincnt = 1)
-    mini = hb.norm.vmin
-    maxi = hb.norm.vmax
-    normalize = mpl.colors.Normalize(vmin=mini, vmax=maxi)
-    axs.hexbin(x, y, gridsize=gridsize, bins = 'log', cmap = plt.cm.get_cmap('gist_yarg'), mincnt = 5, norm = normalize)
+    #mini = hb.norm.vmin
+    #maxi = hb.norm.vmax
+    #normalize = mpl.colors.Normalize(vmin=mini, vmax=maxi)
+    #axs.hexbin(x, y, gridsize=gridsize, bins = 'log', cmap = plt.cm.get_cmap('gist_yarg'), mincnt = 1, norm = normalize)
     
     axs.plot(xx, yy, lw = 1, color = 'orange')
     axs.plot(xx, yy_up, lw = 1, ls = 'dashed', color = 'orange')
@@ -60,7 +60,7 @@ def fig_median(axs, z, xx, yy, yy_up, yy_low, i):
     
 def fig_age(axs, z, x, y, xx, yy, yy_up, yy_low, den, bins = 'log'):
     
-    gridsize = np.array([(int(max(x)-min(x))/0.03), int((max(y)-min(y))/0.03)]).astype(int)
+    gridsize = np.array([(int(max(x)-min(x))/0.02), int((max(y)-min(y))/0.02)]).astype(int)
     p = axs.hexbin(x, y, gridsize=gridsize, bins = bins, alpha = 0.7, C = den, cmap = plt.cm.get_cmap('jet'), mincnt = 1)
     
     axs.plot(xx, yy, lw = 1, color = 'brown')

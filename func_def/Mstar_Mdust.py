@@ -43,10 +43,31 @@ def get_vals(files, z, axs, snapnum, i, on):
     Mdust2 = np.nansum(Mdust2, axis = 1) 
     Mdust = Mdust1 + Mdust2
     
-    Mcg = np.nansum(get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok], axis = 1)
+    Mcg = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
+    
+    Mdust_sat = Mcg[:, 2]*0.7 + Mcg[:, 4]*0.2 + Mcg[:, 6] + Mcg[:, 7] + Mcg[:, 9] + Mcg[:, 10]
+    
+    Mcg = np.nansum(Mcg, axis = 1)
     ok = np.where(Mcg > 1e6)  #Only selecting galaxies with cold gas mass above this value, so the galaxies we are looking at are realistic for the dust content usually seen
     
-    return Mstar[ok], Mdust[ok], Type[ok]
+    Mstar = Mstar[ok] 
+    Mdust = Mdust[ok] 
+    Type = Type[ok]
+    Mdust_sat = Mdust_sat[ok]
+    
+    if z > 4:
+        bins = 10**(np.linspace(min(np.log10(Mstar)), max(np.log10(Mstar)), num = 10, endpoint = True))
+        xx = yy = np.array([])
+
+        for k in range(0, len(bins)-1):
+            ok = np.logical_and(Mstar>=bins[k], Mstar<bins[k+1])
+            if np.sum(ok)>5:
+                xx = np.append(xx, np.nanmax(Mstar[ok]))
+                yy = np.append(yy, np.nanmax(Mdust_sat[ok]))
+
+        axs.plot(np.log10(xx), np.log10(yy), ls = 'dotted', lw = 3, color = 'red')
+                
+    return Mstar, Mdust, Type
     
 
 def plot_Mstar_Mdust_user(files, z, axs, snapnum, i, on):

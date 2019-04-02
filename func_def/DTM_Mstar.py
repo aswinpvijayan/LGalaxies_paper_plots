@@ -43,13 +43,14 @@ def get_vals(files, z, axs, snapnum, i, on):
     elif on and i == 1:
         ok = np.logical_and(Mstar > 10**7.0, Mstar < 10**9.0)
     else:
-        ok = np.array([True]*len(Mstar))
+        ok = np.where(Mstar >= 10**6.9)[0]
 
     Mstar = Mstar[ok]
     Type = get_.get_var(files[i], 'Type', snap)[ok]
     Age = get_.get_var(files[i], 'MassWeightAge', snap)[ok]
     Mcg = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
     Mmet = np.nansum(Mcg[:,2:], axis = 1) #Total metal mass in cold gas
+    
     Z = Mmet/np.nansum(Mcg, axis = 1)
     Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)[ok]
     Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)[ok]
@@ -60,13 +61,25 @@ def get_vals(files, z, axs, snapnum, i, on):
     
     ok = np.where(np.nansum(Mcg, axis = 1) > 1e6)
     
-    return Mstar[ok], Mratio[ok], Type[ok], Age[ok]
+    return Mstar[ok], Mratio[ok], Type[ok], Age[ok], Mcg[ok], Mmet[ok]
 
 def plot_Mstar_DTM_user(files, z, axs, snapnum, i, on):
 
     add = sims[i]
-
-    Mstar, Mratio, Type, Age = get_vals(files, z, axs, snapnum, i, on)
+    
+    Mstar, Mratio, Type, Age, Mcg, Mmet = get_vals(files, z, axs, snapnum, i, on)
+    
+    fracs = np.array([0.7, 0., 0.2, 0., 1., 1., 0., 1., 1.])
+    bins = 10**(np.arange(np.log10(min(Mstar))-0.1, np.log10(max(Mstar))+0.1, 0.15))
+    saturation = np.zeros(len(bins)-1)
+    for j, k in enumerate(fracs):
+        for l in range(len(bins)-1):
+            
+            M_ok = np.logical_and(Mstar > bins[l], Mstar <= bins[l+1])
+            saturation[l] += np.nanmedian(Mcg[M_ok][:,2+j]/Mmet[M_ok])*k 
+    
+    axs.plot(np.log10((bins[1:]+bins[:-1])/2.), np.log10(saturation), ls = 'dotted', lw = 4, color = 'crimson')
+    
     x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(Mstar, Mratio, Type, z)
 
     x = np.log10(x)
@@ -77,7 +90,7 @@ def plot_Mstar_DTM_user(files, z, axs, snapnum, i, on):
     yy_low = np.log10(yy_low)
     
     make_fig.fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den)
-
+    
     xlim = [7.5,11.5]
     ylim = [-2.9,0.]
     xticks = [8, 9, 10, 11]
@@ -92,7 +105,7 @@ def plot_Mstar_DTM_user(files, z, axs, snapnum, i, on):
 def plot_Mstar_DTM_median(files, z, axs, snapnum, i, on):
 
     add = sims[i]
-    Mstar, Mratio, Type, Age = get_vals(files, z, axs, snapnum, i, on)
+    Mstar, Mratio, Type, Age, Mcg, Mmet = get_vals(files, z, axs, snapnum, i, on)
 
     xx, yy, yy_up, yy_low = create_out.out_median(Mstar, Mratio, Type, z)
 
@@ -109,8 +122,8 @@ def plot_Mstar_DTM_median(files, z, axs, snapnum, i, on):
 def plot_Mstar_DTM_age(files, z, axs, snapnum, i, on):
 
     add = sims[i]
-    Mstar, Mratio, Type, Age = get_vals(files, z, axs, snapnum, i, on)
-    x, y, xx, yy, yy_up, yy_low, den = create_out.out_age(Mstar, Mratiofit, Type, Age, z)
+    Mstar, Mratio, Type, Age, Mcg, Mmet = get_vals(files, z, axs, snapnum, i, on)
+    x, y, xx, yy, yy_up, yy_low, den = create_out.out_age(Mstar, Mratio, Type, Age, z)
 
     x = np.log10(x)
     y = np.log10(y)

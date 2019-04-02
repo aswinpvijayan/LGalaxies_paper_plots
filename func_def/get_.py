@@ -62,7 +62,7 @@ def get_var(files, var, snap):
             
             filess = np.delete(filess, kill)
         
-    out = Parallel(n_jobs = 16)(delayed(get_)(i, [var, snap]) for i in filess)  
+    out = Parallel(n_jobs = 6)(delayed(get_)(i, [var, snap]) for i in filess)  
     out = np.concatenate(out, axis = 0)
     
     stop = timeit.default_timer()
@@ -99,7 +99,7 @@ def remove_(x, turn_off = [10**20]):
 def get_median(x, y, n = 15):
     
     #bins = 10**(np.arange(min(np.log10(x))-0.2, max(np.log10(x))+0.2, 0.3))
-    bins = 10**(np.linspace(min(np.log10(x)), max(np.log10(x)), num = n))
+    bins = 10**(np.linspace(min(np.log10(x)), max(np.log10(x)), num = n, endpoint = True))
     xx = yy = yy_up = yy_low = np.array([])
 
     for i in range(0, len(bins)-1):
