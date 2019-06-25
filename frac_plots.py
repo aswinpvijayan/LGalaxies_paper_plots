@@ -69,8 +69,6 @@ for i in range(0, len(mu_array)):
             axs[i, j].plot([t_e,t_e],[0.,1.],':',color='red')
             axs[i, j].plot([t_e*(1.-mu)/mu,t_e*(1.-mu)/mu],[0.,1.],'-.',color='orange')
             axs[i, j].axhline(y = 0.7, ls = '-.',color='blue')
-        #axs.set_xlabel(r'$t/t_{acc}$', fontsize = 20)
-        #axs.set_ylabel(r'$f_C,\ f_D$', fontsize = 20)
         for label in (axs[i, j].get_xticklabels() + axs[i, j].get_yticklabels()):
             label.set_fontsize(18)
 

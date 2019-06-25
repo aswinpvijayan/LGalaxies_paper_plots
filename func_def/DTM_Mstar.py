@@ -31,17 +31,17 @@ def fit(z, theta):
     a, b, c, d, e = theta
     Zsun = 0.0134
     tau = 5e-5/((10**a)*x*Zsun)
-    return a + np.log10(1. + b*(np.exp(-c*(x**d)*((y/tau)**e))))
+    return a + np.log10(1. + b*(1.-np.exp(-c*(x**d)*((y/tau)**e))))
 
 
-def get_vals(files, z, axs, snapnum, i, on):
+def get_vals(files, z, snapnum, i, on):
 
     snap = snapnum[i][np.where(redshift == str(z))[0][0]]
     Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
     if on and i == 0:
         ok = np.where(Mstar >= 10**9.0)[0]
     elif on and i == 1:
-        ok = np.logical_and(Mstar > 10**7.0, Mstar < 10**9.0)
+        ok = np.logical_and(Mstar > 10**7.4, Mstar < 10**9.0)
     else:
         ok = np.where(Mstar >= 10**6.9)[0]
 
@@ -67,18 +67,22 @@ def plot_Mstar_DTM_user(files, z, axs, snapnum, i, on):
 
     add = sims[i]
     
-    Mstar, Mratio, Type, Age, Mcg, Mmet = get_vals(files, z, axs, snapnum, i, on)
+    Mstar, Mratio, Type, Age, Mcg, Mmet = get_vals(files, z, snapnum, i, on)
+    
     
     fracs = np.array([0.7, 0., 0.2, 0., 1., 1., 0., 1., 1.])
     bins = 10**(np.arange(np.log10(min(Mstar))-0.1, np.log10(max(Mstar))+0.1, 0.15))
     saturation = np.zeros(len(bins)-1)
+       
     for j, k in enumerate(fracs):
         for l in range(len(bins)-1):
             
             M_ok = np.logical_and(Mstar > bins[l], Mstar <= bins[l+1])
             saturation[l] += np.nanmedian(Mcg[M_ok][:,2+j]/Mmet[M_ok])*k 
     
-    axs.plot(np.log10((bins[1:]+bins[:-1])/2.), np.log10(saturation), ls = 'dotted', lw = 4, color = 'crimson')
+    xx_interp = 10**np.linspace(7.5, 11.5, 10)
+    yy_interp = np.interp(xx_interp, (bins[1:]+bins[:-1])/2., saturation)
+    axs.plot(np.log10(xx_interp), np.log10(yy_interp), ls = 'dotted', lw = 4, color = 'crimson')
     
     x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(Mstar, Mratio, Type, z)
 
@@ -98,7 +102,7 @@ def plot_Mstar_DTM_user(files, z, axs, snapnum, i, on):
     axs.set_xlim(xlim)
     axs.set_ylim(ylim)
     axs.set_xticks(xticks)
-
+    
     return add
 
 

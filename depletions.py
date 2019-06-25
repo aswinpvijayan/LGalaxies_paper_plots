@@ -135,17 +135,26 @@ def plot_Z_dep(files, z, axs, snaps, i, on):
         
     else:
         
-        Type = get_.get_var(files[i], 'Type', snap)
+        add = sims[i]
+        snap = snaps[0][np.where(redshift == str(z))[0][0]]
+        Mstar = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/0.673
+        if i == 0: 
+            ok = np.where(Mstar>=1e9)[0]
+        else:
+            ok = np.logical_and(Mstar > 1e7, Mstar <= 1e9)
+            
+        Mstar = Mstar[ok]
+        Type = get_.get_var(files[i], 'Type', snap)[ok]
 
-        Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)
-        Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)
+        Mdust1 = get_.get_var(files[i], 'DustColdGasDiff_elements', snap)[ok]
+        Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)[ok]
         Mdust = Mdust1 + Mdust2    
         
-        Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)
-        Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)
+        Mcg1 = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok]
+        Mcg2 = get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
         Mcg = Mcg1 + Mcg2
         
-        SFR = get_.get_var(files[i], 'Sfr', snap)
+        SFR = get_.get_var(files[i], 'Sfr', snap)[ok]
         
     
     sSFR = SFR/Mstar
@@ -227,7 +236,7 @@ elif inp == 1:
 
 fig.tight_layout()    
 fig.subplots_adjust(bottom=0.12, left = 0.14, wspace=0, hspace=0)
-fig.text(0.015, 0.52, r'$\mathrm{Fraction}$', va='center', rotation='vertical', fontsize=22)
+fig.text(0.015, 0.52, r'$\mathrm{Element\ Depletion\ Fraction}$', va='center', rotation='vertical', fontsize=22)
 fig.text(0.45, 0.04, xlab, va='center', fontsize=22)
 plt.savefig(savename+add+'_z0.pdf')
 plt.close()

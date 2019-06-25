@@ -33,8 +33,8 @@ sns.set_style(style='white')
 
 h = 0.673 #little h as used in the model
 
-filesMR = '../Dust_output/MR/SA_output_*'
-filesMRII = '../Dust_output/MRII/SA_output_*'
+filesMR = '../Dust_obr_output/MR/SA_output_*'
+filesMRII = '../Dust_obr_output/MRII/SA_output_*'
 files = np.array([filesMR, filesMRII])
 
 redshift = np.array(['0',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '9', '10', '11', '12', '13', '14'])
@@ -52,7 +52,7 @@ i = int(sys.argv[3])
 
             ##########################################################################
 #Change the required redshift range here
-norm_z = np.arange(0, 11, 1)
+norm_z = np.arange(0, 8, 1)
 high_z = np.arange(9, 13, 1)
 all_z = np.arange(0, 13, 1)
 
@@ -146,8 +146,11 @@ def dust_prod_rate_redshift(files, z, snap, i):
     #Z = np.nansum(Mcg[:,2:], axis = 1)/np.nansum(Mcg, axis = 1)
     Mdust = np.nansum(Mdust, axis = 1)
     Mcg = np.nansum(Mcg, axis = 1)
-    ok = np.logical_and(sSFR > get_.sSFR_cut(z), np.logical_and(Mdust > 0.0, Type == 0))
-        
+    if inp == 0:
+        ok = np.logical_and(Mdust > 0, Type == 0)   
+    else:
+        ok = np.logical_and(sSFR > get_.sSFR_cut(z), np.logical_and(Mcg > 1e6, Type == 0))
+    
     dustrates = dustrates[ok]
     SFR = SFR[ok]
     Mstar = Mstar[ok]
@@ -166,12 +169,13 @@ if inp == 0:
         left = 0.11
     
     pAGB = pSNII = pSNIA = pGG = dest = pNET = pSFR = np.array([])
+    z_ = np.arange(0, 14, 1)
+    
     for z in z_:
         snap = snaps[i][np.where(redshift == str(z))[0][0]]
         dustrates, Mstar, SFR, Z = dust_prod_rate_redshift(files, z, snap, i)
-        ok = np.where(Mstar >= 10**8.9)
-        dustrates = np.nansum(dustrates[ok]/vol[i], axis = 0)
-        SFR = np.nansum(SFR[ok]/vol[i], axis = 0)        
+        dustrates = np.nansum(dustrates/vol[i], axis = 0)
+        SFR = np.nansum(SFR/vol[i], axis = 0)        
         
         pAGB = np.append(pAGB, dustrates[0])
         pSNII = np.append(pSNII, dustrates[1])
@@ -180,7 +184,8 @@ if inp == 0:
         dest = np.append(dest, dustrates[4])
         pNET = np.append(pNET, np.nansum(dustrates[:4]) - dustrates[4])
         pSFR = np.append(pSFR, SFR)
-        
+    
+    z_ = [0,1,2,3,4,5,6,7,8.220924, 8.934729,9.715587,10.570324,11.507145,12.534529]   
     axs.plot(z_, np.log10(pAGB), label = r'$\mathrm{AGB}$', color='b', linewidth = 2)
     axs.plot(z_, np.log10(pSNII), label = r'$\mathrm{SNII}$', color='r', linewidth = 2)
     axs.plot(z_, np.log10(pSNIA), label = r'$\mathrm{SNIA}$', color='y', linewidth = 2)
@@ -192,7 +197,10 @@ if inp == 0:
     lgd = axs.legend(frameon=False, fontsize = 16, markerscale=2, loc = 3, numpoints=1, handletextpad=0.005)
     lgd.set_zorder(100)
     axs.grid()
-    axs.set_xticks(z_)
+    axs.set_xticks(np.arange(0, 11, 1))
+    axs.set_xlim([0,10])
+    axs.set_ylim([-10,-1])
+    axs.set_yticks(np.arange(-10, 0, 1))
     for label in (axs.get_xticklabels() + axs.get_yticklabels()):
         label.set_fontsize(18)
 
@@ -353,5 +361,5 @@ fig.subplots_adjust(bottom = bottom, left = left, wspace=0, hspace=0)
 fig.text(0.01, 0.52, ylab, va='center', rotation='vertical', fontsize=24)
 fig.text(0.49, 0.05, xlab, va='center', fontsize=26)
 #fig.text(0.44, 0.03, xlab, va='center', fontsize=24)
-plt.savefig(savename1+savename2+savename3+'_full.pdf')
+plt.savefig(savename1+savename2+savename3+'_full1.pdf')
 plt.close()

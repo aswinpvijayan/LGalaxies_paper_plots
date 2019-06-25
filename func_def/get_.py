@@ -42,7 +42,7 @@ def get_(filename, pack):
     return out
 
 
-def get_var(files, var, snap):
+def get_var(files, var, snap, n = 6):
 
     start = timeit.default_timer()
     print ('Reading in {} from snap {}...'.format(var, snap))    
@@ -62,7 +62,7 @@ def get_var(files, var, snap):
             
             filess = np.delete(filess, kill)
         
-    out = Parallel(n_jobs = 6)(delayed(get_)(i, [var, snap]) for i in filess)  
+    out = Parallel(n_jobs = n)(delayed(get_)(i, [var, snap]) for i in filess)  
     out = np.concatenate(out, axis = 0)
     
     stop = timeit.default_timer()
@@ -108,8 +108,8 @@ def get_median(x, y, n = 15):
             xx = np.append(xx, np.nanmedian(x[ok]))
             yy = np.append(yy, np.nanmedian(y[ok]))
             
-            yy_low = np.append(yy_low, np.percentile(y[ok], 16))
-            yy_up = np.append(yy_up, np.percentile(y[ok], 84))
+            yy_low = np.append(yy_low, np.nanpercentile(y[ok], 16))
+            yy_up = np.append(yy_up, np.nanpercentile(y[ok], 84))
 
     return xx, yy, yy_up, yy_low
 

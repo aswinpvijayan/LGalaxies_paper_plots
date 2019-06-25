@@ -25,7 +25,7 @@ MR_vol = (480.279/h)**3  #Millennium
 MRII_vol = (96.0558/h)**3 #Millennium II
 
 
-def get_vals(files, z, axs, snapnum, i, on):
+def get_vals(files, z, snapnum, i, on):
 
     if on:
         i = 0
@@ -56,7 +56,7 @@ def get_vals(files, z, axs, snapnum, i, on):
         i = 1
         snap = snapnum[i][np.where(redshift == str(z))[0][0]]
         tmp = (get_.get_var(files[i], 'StellarMass', snap)*1e10)/h
-        ok = np.logical_and(tmp > 10**7.0, tmp < 10**9.0)
+        ok = np.logical_and(tmp > 10**7.4, tmp < 10**9.0)
         Mstar = np.append(Mstar, tmp[ok])
         Type = np.append(Type, get_.get_var(files[i], 'Type', snap)[ok])
         Age = np.append(Age, get_.get_var(files[i], 'MassWeightAge', snap)[ok])
@@ -108,12 +108,12 @@ def get_vals(files, z, axs, snapnum, i, on):
         
         ok = np.logical_and(Mcg > 1e6, 12.+np.log10(met) > 6.)  #Only selecting galaxies with cold gas mass above this value, so the galaxies we are looking at are realistic for the dust content usually seen
         
-    return add, met[ok], Mratio[ok], Type[ok], Age[ok]
+    return add, Mstar[ok], met[ok], Mratio[ok], Type[ok], Age[ok]
 
 
 def plot_O_H_vs_DTM_user(files, z, axs, snapnum, i, on):
 
-    add, met, Mratio, Type, Age = get_vals(files, z, axs, snapnum, i, on)
+    add, Mstar, met, Mratio, Type, Age = get_vals(files, z, snapnum, i, on)
     x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(met, Mratio, Type, z)
 
     x = 12. + np.log10(x)

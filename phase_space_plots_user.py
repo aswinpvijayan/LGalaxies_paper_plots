@@ -41,7 +41,7 @@ from mpl_toolkits.axes_grid.inset_locator import inset_axes
 """
 
 filesMR = '../Dust_output/MR/SA_output_*'
-filesMRII = '../Dust_output/MRII/SA_output_*'
+filesMRII = '../Dust_output/MRII/SA_output*'
 files = np.array([filesMR, filesMRII])
 
 inp, i = int(sys.argv[1]), int(sys.argv[2])
@@ -67,24 +67,24 @@ left = 0.08
 if inp == 0:
 
     xlab = r'$\mathrm{log}_{10}(M_{*}/M_{\odot})$'
-    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{\odot})$'
-    savename = 'Dust_Stellar_'
-    fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+    ylab = r'$\mathrm{log}_{10}(M_{\mathrm{Dust}}/M_{*})$'
+    savename = 'Dust_Stellar_ratio_'
+    #fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
     from obs_plots import DM_obs
     from Mstar_Mdust import plot_Mstar_Mdust_user
 
     for z in range(0, 9):
-        DM_obs(axs, z)   #Plotting the observational data points
-        axs.text(8.25, 2.5, r'$z = {}$'.format(z), fontsize = 18)
-        
+        #DM_obs(axs[z], z)   #Plotting the observational data points
+        #axs[z].text(8.25, 2.5, r'$z = {}$'.format(z), fontsize = 18)
+        axs[z].text(8., -1.5, r'$z = {}$'.format(z), fontsize = 18)
         if i <= 1:
-            add = plot_Mstar_Mdust_user(files, z, axs, snaps, i, False)
+            add = plot_Mstar_Mdust_user(files, z, axs[z], snaps, i, False)
         else:
-            add1 = plot_Mstar_Mdust_user(files, z, axs, snaps, 0, True)
-            add2 = plot_Mstar_Mdust_user(files, z, axs, snaps, 1, True)
+            add1 = plot_Mstar_Mdust_user(files, z, axs[z], snaps, 0, True)
+            add2 = plot_Mstar_Mdust_user(files, z, axs[z], snaps, 1, True)
             add = add1+'_'+add2
         
-        axs.legend(loc = 2, fontsize = 15)
+        axs[z].legend(loc = 2, fontsize = 15)
         """
         add = 'obs'
         xlim = [7.5,11.9]
@@ -147,18 +147,18 @@ elif inp == 3:
     bottom = 0.12
     left = 0.15
     
-    fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
+    #fig, axs = plt.subplots(nrows = 1, ncols = 1, figsize=(9, 8), sharex=True, sharey=True, facecolor='w', edgecolor='k')
     
     from obs_plots import DG_met_obs
     from DGR_Met import plot_O_H_vs_DGR_user
     
-    for z in range(0, 1):
-        DG_met_obs(axs, z)   #Plotting the observational data points
-        #axs.text(9.5, -1, r'$z = {}$'.format(z), fontsize = 18)
+    for z in range(0, 9):
+        DG_met_obs(axs[z], z)   #Plotting the observational data points
+        axs[z].text(9.5, -1, r'$z = {}$'.format(z), fontsize = 18)
         if i <= 1:
-            add = plot_O_H_vs_DGR_user(files, z, axs, snaps, i, False)
+            add = plot_O_H_vs_DGR_user(files, z, axs[z], snaps, i, False)
         else:
-            add = plot_O_H_vs_DGR_user(files, z, axs, snaps, i, True)
+            add = plot_O_H_vs_DGR_user(files, z, axs[z], snaps, i, True)
 
         
 
@@ -191,9 +191,6 @@ elif inp == 4:
         
         axs[z].text(10.5, -1.5, r'$z = {}$'.format(z), fontsize = 18)
         
-        #Here 0.401794648 is the estimated maximum value of Mdust/Mmet. 
-        #axs[z].axhline(np.log10(0.401794648), ls = 'dotted', lw = 4, color = 'red')
-                
 
 elif inp == 5:
 

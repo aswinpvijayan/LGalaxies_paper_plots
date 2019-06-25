@@ -41,6 +41,7 @@ def get_vals(files, z, axs, snapnum, i, on):
     Mdust2 = get_.get_var(files[i], 'DustColdGasClouds_elements', snap)[ok]
     Mdust1 = np.nansum(Mdust1, axis = 1)  
     Mdust2 = np.nansum(Mdust2, axis = 1) 
+    #Mdust = np.nansum(get_.get_var(files[i], 'DustEjectedMass_elements', snap)[ok], axis = 1)# + np.nansum(get_.get_var(files[i], 'DustEjectedMass_elements', snap)[ok], axis = 1) + np.nansum(get_.get_var(files[i], 'DustICM_elements', snap)[ok], axis = 1)#
     Mdust = Mdust1 + Mdust2
     
     Mcg = get_.get_var(files[i], 'ColdGasDiff_elements', snap)[ok] + get_.get_var(files[i], 'ColdGasClouds_elements', snap)[ok]
@@ -54,7 +55,7 @@ def get_vals(files, z, axs, snapnum, i, on):
     Mdust = Mdust[ok] 
     Type = Type[ok]
     Mdust_sat = Mdust_sat[ok]
-    
+    """
     if z > 4:
         bins = 10**(np.linspace(min(np.log10(Mstar)), max(np.log10(Mstar)), num = 10, endpoint = True))
         xx = yy = np.array([])
@@ -66,7 +67,7 @@ def get_vals(files, z, axs, snapnum, i, on):
                 yy = np.append(yy, np.nanmax(Mdust_sat[ok]))
 
         axs.plot(np.log10(xx), np.log10(yy), ls = 'dotted', lw = 3, color = 'red')
-                
+    """            
     return Mstar, Mdust, Type
     
 
@@ -75,7 +76,7 @@ def plot_Mstar_Mdust_user(files, z, axs, snapnum, i, on):
     add = sims[i] 
     
     Mstar, Mdust, Type = get_vals(files, z, axs, snapnum, i, on)
-    x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(Mstar, Mdust, Type, z)
+    x, y, xx, yy, yy_up, yy_low, den = create_out.out_user(Mstar, Mdust/Mstar, Type, z)
     
     x = np.log10(x)
     y = np.log10(y)
@@ -87,7 +88,7 @@ def plot_Mstar_Mdust_user(files, z, axs, snapnum, i, on):
     make_fig.fig_user(axs, z, x, y, xx, yy, yy_up, yy_low, den)
     
     xlim = [7.5,11.9]
-    ylim = [1.5,10.8]
+    ylim = [-5,-1]
     xticks = [8, 9, 10, 11]
     
     axs.set_xlim(xlim)
